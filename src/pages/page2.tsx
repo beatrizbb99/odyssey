@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useAppContext } from '../contexts/AppContext';
 import styles from '../styles/Page2.module.css';
 import Link from 'next/link';
+import ModelViewer from './ModelViewer'; // Import your ModelViewer component
 
 const Page2: React.FC = () => {
   const { title, setTitle } = useAppContext();
@@ -18,11 +19,13 @@ const Page2: React.FC = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 1 }}
       className={styles.page2}
+      style={{ backgroundColor: '#ffc0cb' }} // Set pastel pink background color
     >
       <h1>Welcome to the book-page!</h1>
-        <Link href="/" className={styles.link}>
-            Go back to your bookshelf
-        </Link>
+      <ModelViewer modelName="your-model-name" /> {/* Replace with your model name */}
+      <Link href="/" className={styles.link}>
+        Go back to your bookshelf
+      </Link>
     </motion.div>
   );
 };

@@ -1,16 +1,44 @@
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect, useRef } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
-import { OrbitControls, Html } from '@react-three/drei';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls, Html, useGLTF, useAnimations } from '@react-three/drei';
 import { storage } from '../api/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
+import * as THREE from 'three';
 
-const Model: React.FC<{ url: string }> = ({ url }) => {
-  const gltf = useLoader(GLTFLoader, url);
-  return <primitive object={gltf.scene} scale={[1, 1, 1]} position={[0, 0, 0]} />;
+interface ModelProps {
+  url: string;
+}
+
+const Model: React.FC<ModelProps> = ({ url }) => {
+  const { scene, animations } = useGLTF(url);
+  const group = useRef<THREE.Group>(null);
+  const { actions } = useAnimations(animations, group);
+
+  useEffect(() => {
+    if (actions && animations.length > 0) {
+      Object.values(actions).forEach((action) => {
+        if (action) {
+          action.play();
+        }
+      });
+    }
+  }, [actions, animations]);
+
+  return (
+    <primitive
+      object={scene.clone()}
+      ref={group}
+      scale={[1, 1, 1]}
+      position={[0, 0, 0]}
+    />
+  );
 };
 
-const ModelViewer: React.FC<{ modelName: string }> = ({ modelName }) => {
+interface ModelViewerProps {
+  modelName: string;
+}
+
+const ModelViewer: React.FC<ModelViewerProps> = ({ modelName }) => {
   const [modelUrl, setModelUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +60,7 @@ const ModelViewer: React.FC<{ modelName: string }> = ({ modelName }) => {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       {error && <p>{error}</p>}
-      {!error && modelUrl && (
+      {modelUrl && (
         <Canvas
           frameloop="demand"
           camera={{ position: [-4, 3, 6], fov: 45, near: 0.1, far: 1000 }}

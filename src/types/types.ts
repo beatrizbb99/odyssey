@@ -10,3 +10,9 @@ export interface Story {
     title: string;
     chapters: Chapter[];
 }
+
+
+export interface Model {
+    id: string;
+    name: string;
+}
