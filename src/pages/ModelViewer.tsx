@@ -18,15 +18,27 @@ const Model: React.FC<ModelProps> = ({ url }) => {
     if (actions && animations.length > 0) {
       Object.values(actions).forEach((action) => {
         if (action) {
+          console.log(action.getClip().name);
+          if (action.getClip().name === 'loopingAnimation') {
+            action.setLoop(THREE.LoopRepeat, Infinity);
+          } else {
+            action.setLoop(THREE.LoopOnce, 1);
+            action.clampWhenFinished = true;
+          }
           action.play();
         }
       });
     }
-  }, [actions, animations]);
+
+    // Center model
+    const box = new THREE.Box3().setFromObject(scene);
+    const center = box.getCenter(new THREE.Vector3());
+    scene.position.sub(center);
+  }, [actions, animations, scene]);
 
   return (
     <primitive
-      object={scene.clone()}
+      object={scene}
       ref={group}
       scale={[1, 1, 1]}
       position={[0, 0, 0]}
@@ -62,8 +74,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelName }) => {
       {error && <p>{error}</p>}
       {modelUrl && (
         <Canvas
-          frameloop="demand"
-          camera={{ position: [-4, 3, 6], fov: 45, near: 0.1, far: 1000 }}
+          frameloop="always"
+          camera={{ position: [0, 0, 20], fov: 45, near: 0.1, far: 1000 }}
+          style={{ background: '#87CEEB' }} //nur um es besser zu erkennen
         >
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
