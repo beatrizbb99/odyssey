@@ -24,7 +24,7 @@ const Home: React.FC = () => {
         </motion.h1>
       </motion.div>
       <div className={styles.modelContainer}>
-        <ModelViewer modelName="one_ring" />
+        <ModelViewer modelName="reading_room" />
       </div>
       <Link href="/page2" passHref>
         <motion.span

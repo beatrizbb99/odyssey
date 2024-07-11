@@ -11,8 +11,9 @@ export interface Story {
     chapters: Chapter[];
 }
 
-
-export interface Model {
+export interface Book {
     id: string;
     name: string;
+    text: string;
+    model: string;
 }

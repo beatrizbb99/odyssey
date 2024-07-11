@@ -75,8 +75,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelName }) => {
       {modelUrl && (
         <Canvas
           frameloop="always"
-          camera={{ position: [0, 0, 20], fov: 45, near: 0.1, far: 1000 }}
-          style={{ background: '#87CEEB' }} //nur um es besser zu erkennen
+          camera={{ position: [25, 13, 20], fov: 17, near: 0.1, far: 100 }}
+          style={{ background: '#fbf4e4' }} //nur um es besser zu erkennen
         >
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
