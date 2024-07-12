@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useAppContext } from '../contexts/AppContext';
 import ModelViewer from './ModelViewer';
 import styles from '@/styles/Home.module.css';
+import Scene from '@/components/Scene';
 
 const Home: React.FC = () => {
   const { title } = useAppContext();
@@ -23,9 +24,7 @@ const Home: React.FC = () => {
           {title}
         </motion.h1>
       </motion.div>
-      <div className={styles.modelContainer}>
-        <ModelViewer modelName="reading_room" />
-      </div>
+      <Scene />
       <Link href="/page2" passHref>
         <motion.span
           initial={{ opacity: 0 }}
