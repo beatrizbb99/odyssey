@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useAppContext } from '../contexts/AppContext';
 import ModelViewer from './ModelViewer';
-import styles from '@/styles/Home.module.css';
+import Headline from './Headline';
+import styles from '@/styles/Headline.module.css'; // Verwenden Sie .scss für SCSS-Dateien
 
 const Home: React.FC = () => {
-  const { title } = useAppContext();
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className={styles.container}>
@@ -20,11 +20,13 @@ const Home: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          {title}
         </motion.h1>
       </motion.div>
-      <div className={styles.modelContainer}>
-        <ModelViewer modelName="reading_room" />
+      {/* <div className={styles.modelContainer}>
+         <ModelViewer modelName="reading_room" />
+      </div> */}
+      <div className={styles.headlineContainer}>
+        <Headline/>
       </div>
       <Link href="/page2" passHref>
         <motion.span
@@ -32,7 +34,6 @@ const Home: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          Open a book!
         </motion.span>
       </Link>
     </div>

@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import { AnimatePresence } from 'framer-motion';
 import { AppProvider } from '../contexts/AppContext';
 import '../styles/globals.css';
+import '../styles/Headline.css';
+
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
