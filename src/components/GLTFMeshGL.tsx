@@ -6,10 +6,9 @@ import { ThreeEvent, useThree } from '@react-three/fiber';
 
 interface IGLTFMeshGLProps {
   modelUrl: string;
-  canvasRef: React.RefObject<HTMLCanvasElement>;
 }
 
-const GLTFMeshGL = forwardRef<ThreeGroup, IGLTFMeshGLProps>(({ modelUrl, canvasRef }, ref) => {
+const GLTFMeshGL = forwardRef<ThreeGroup, IGLTFMeshGLProps>(({ modelUrl }, ref) => {
   const { nodes } = useGLTF(modelUrl);
   const [hoveredGroup, setHoveredGroup] = useState<ThreeGroup | null>(null);
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -29,8 +28,8 @@ const GLTFMeshGL = forwardRef<ThreeGroup, IGLTFMeshGLProps>(({ modelUrl, canvasR
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
-      setMousePosition({ x: event.pageX, y: event.pageY});
-      console.log( mousePosition.x, mousePosition.y);
+      setMousePosition({ x: event.clientX - 600, y: event.clientY - 400});
+      console.log( event.offsetX, event.offsetY);
     };
 
     // Add event listener when a group is hovered

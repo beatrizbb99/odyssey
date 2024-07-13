@@ -8,7 +8,6 @@ import { Group } from 'three';
 const Scene: React.FC = () => {
   const meshRef = useRef<Group>(null);
   const [modelUrl, setModelUrl] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const fetchModelUrl = async () => {
@@ -20,11 +19,11 @@ const Scene: React.FC = () => {
   }, []);
 
   return (
-    <Canvas ref={canvasRef} style={{ height: '100vh', width: '100vw'}} camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 1000 }}>
+    <Canvas style={{ height: '100vh', width: '100vw'}} camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 1000 }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
       <directionalLight position={[-5, -5, -5]} intensity={0.5} />
-      {modelUrl && <GLTFMeshGL ref={meshRef} modelUrl={modelUrl} canvasRef={canvasRef} />}
+      {modelUrl && <GLTFMeshGL ref={meshRef} modelUrl={modelUrl} />}
       <OrbitControls />
     </Canvas>
   );
