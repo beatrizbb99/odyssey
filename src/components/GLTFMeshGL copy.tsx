@@ -1,8 +1,8 @@
-import React, { ReactNode, useMemo, forwardRef, useState } from 'react';
+import React, { ReactNode, useMemo, forwardRef, useState, useEffect } from 'react';
 import { useGLTF, Html } from '@react-three/drei';
-import { Group as ThreeGroup, Mesh as ThreeMesh, Object3D, Vector3 } from 'three';
+import { Group as ThreeGroup, Mesh as ThreeMesh, Object3D } from 'three';
 import { EffectComposer, Outline } from '@react-three/postprocessing';
-import { ThreeEvent } from '@react-three/fiber';
+import { ThreeEvent, useThree } from '@react-three/fiber';
 
 interface IGLTFMeshGLProps {
   modelUrl: string;
@@ -11,17 +11,47 @@ interface IGLTFMeshGLProps {
 
 const GLTFMeshGL = forwardRef<ThreeGroup, IGLTFMeshGLProps>(({ modelUrl, children }, ref) => {
   const { nodes } = useGLTF(modelUrl);
-  const [hoveredObject, setHoveredObject] = useState<Object3D | null>(null);
+  const [hoveredGroup, setHoveredGroup] = useState<ThreeGroup | null>(null);
+  const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const handlePointerOver = (event: ThreeEvent<PointerEvent>) => {
-    const { object } = event;
-    if (object) {
-      setHoveredObject(object as Object3D);
+  const groupTitles: { [key: string]: string } = {
+    'book_pile1': 'Title 1',
+    'book_pile2': 'Title 2',
+    'book_pile3': 'Title 3',
+    'book_pile4': 'Title 4',
+    'book_pile5': 'Title 5',
+    'book_pile6': 'Title 6',
+    'book_pile7': 'Title 7',
+    'book_pile8': 'Title 8',
+    'book_pile9': 'Title 9',
+    'book_pile10': 'Title 10',
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      setMousePosition({ x: event.clientX, y: event.clientY});
+      console.log(mousePosition.x, mousePosition.y);
+    };
+
+    // Add event listener when a group is hovered
+    if (hoveredGroup) {
+      window.addEventListener('mousemove', handleMouseMove);
+    } else {
+      // Remove event listener when no group is hovered
+      window.removeEventListener('mousemove', handleMouseMove);
     }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [hoveredGroup]);
+
+  const handlePointerOver = (event: ThreeEvent<PointerEvent>, group: ThreeGroup) => {
+    setHoveredGroup(group);
   };
 
   const handlePointerOut = () => {
-    setHoveredObject(null);
+    setHoveredGroup(null);
   };
 
   const renderedScene = useMemo(() => {
@@ -29,7 +59,6 @@ const GLTFMeshGL = forwardRef<ThreeGroup, IGLTFMeshGLProps>(({ modelUrl, childre
 
     const sceneNode = nodes['Scene'];
 
-    // Direktes Rendern der "Scene"-Gruppe und ihrer Kinder rekursiv
     const renderScene = (node: Object3D, nodeName: string): JSX.Element | null => {
       if (node instanceof ThreeMesh) {
         return (
@@ -40,15 +69,20 @@ const GLTFMeshGL = forwardRef<ThreeGroup, IGLTFMeshGLProps>(({ modelUrl, childre
             position={node.position}
             rotation={node.rotation}
             scale={node.scale}
-            onPointerOver={nodeName.includes('book_pile') ? handlePointerOver : undefined}
-            onPointerOut={nodeName.includes('book_pile') ? handlePointerOut : undefined}
           />
         );
       } else if (node instanceof ThreeGroup) {
-        // Render Group
+        const isBookPile = node.name.includes('book_pile');
         return (
-          <group key={node.name} position={node.position} rotation={node.rotation} scale={node.scale}>
-            {Object.values(node.children).map((child, idx) => renderScene(child, `${node.name}-${idx}`))}
+          <group
+            key={node.name}
+            position={node.position}
+            rotation={node.rotation}
+            scale={node.scale}
+            onPointerOver={isBookPile ? (e) => handlePointerOver(e, node) : undefined}
+            onPointerOut={isBookPile ? handlePointerOut : undefined}
+          >
+            {node.children.map((child, idx) => renderScene(child, `${node.name}-${idx}`))}
           </group>
         );
       }
@@ -58,43 +92,31 @@ const GLTFMeshGL = forwardRef<ThreeGroup, IGLTFMeshGLProps>(({ modelUrl, childre
     return renderScene(sceneNode, sceneNode.name);
   }, [nodes]);
 
+  const htmlStyle: React.CSSProperties = {
+    pointerEvents: 'none',
+    position: 'absolute',
+    backgroundColor: 'white',
+    padding: '10px',
+    borderRadius: '5px',
+    left: `${mousePosition.x}px`,
+    top: `${mousePosition.y}px`,
+    transform: 'translate(-50%, -50%)', // Optional: Center the tooltip around the mouse pointer
+  };
+
   return (
     <group ref={ref}>
       {renderedScene}
       {children}
-      {hoveredObject && (
+      {hoveredGroup && (
         <>
           <EffectComposer>
-            <Outline
-              selectionLayer={10}
-              blendFunction={1} // BlendFunction.Subtract for subtractive blending
-              visibleEdgeColor={0xffffff} // Color of the visible edges
-              hiddenEdgeColor={0x22090a} // Color of the hidden (occluded) edges
-              edgeStrength={3} // Strength of the outline effect
-              width={1}
-              pulseSpeed={0} // Speed of the pulse effect
-              selection={[hoveredObject]} // Array of Object3D or their names to apply the effect to
-            />
+            <Outline />
           </EffectComposer>
-          {hoveredObject.position && (
-            <Html
-              style={{
-                pointerEvents: 'none',
-                position: 'fixed',  // Use fixed position to overlay on top of the scene
-                left: `${(hoveredObject.position.x / window.innerWidth) * 100}%`,  // Convert X position to percentage
-                top: `${(1 - hoveredObject.position.y / window.innerHeight) * 100}%`,   // Convert Y position to percentage
-                transform: 'translate(-50%, -50%)',  // Center the box at the mouse position
-                backgroundColor: 'white',
-                padding: '10px',
-                borderRadius: '5px',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <div>
-                <h1>Title 1</h1>
-              </div>
-            </Html>
-          )}
+          <Html style={htmlStyle}>
+            <div>
+              <p>{groupTitles[hoveredGroup.name] || 'Unknown Title'}</p>
+            </div>
+          </Html>
         </>
       )}
     </group>

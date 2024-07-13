@@ -2,9 +2,6 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
   background-color: #ffc0cb;
   text-align: center;
 }
