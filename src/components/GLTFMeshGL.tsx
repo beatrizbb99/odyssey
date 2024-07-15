@@ -1,8 +1,8 @@
-import React, { ReactNode, useMemo, forwardRef, useState, useEffect, useRef } from 'react';
+import React, { useMemo, forwardRef, useState, useEffect, useRef } from 'react';
 import { useGLTF, Html } from '@react-three/drei';
 import { Group as ThreeGroup, Mesh as ThreeMesh, Object3D } from 'three';
 import { EffectComposer, Outline } from '@react-three/postprocessing';
-import { ThreeEvent, useThree } from '@react-three/fiber';
+import { ThreeEvent } from '@react-three/fiber';
 
 interface IGLTFMeshGLProps {
   modelUrl: string;
@@ -14,16 +14,16 @@ const GLTFMeshGL = forwardRef<ThreeGroup, IGLTFMeshGLProps>(({ modelUrl }, ref) 
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const groupTitles: { [key: string]: string } = {
-    'book_pile1': 'Title 1',
-    'book_pile2': 'Title 2',
-    'book_pile3': 'Title 3',
-    'book_pile4': 'Title 4',
-    'book_pile5': 'Title 5',
-    'book_pile6': 'Title 6',
-    'book_pile7': 'Title 7',
-    'book_pile8': 'Title 8',
-    'book_pile9': 'Title 9',
-    'book_pile10': 'Title 10',
+    'book_pile1': 'Für Kinder',
+    'book_pile2': 'Horror',
+    'book_pile3': 'Märchen',
+    'book_pile4': 'Fantasy',
+    'book_pile5': 'Geschichte',
+    'book_pile6': 'Paranormal',
+    'book_pile7': 'Poetry',
+    'book_pile8': 'Thriller',
+    'book_pile9': 'Sci-Fi',
+    'book_pile10': 'Dystopian',
   };
 
   useEffect(() => {
@@ -99,7 +99,7 @@ const GLTFMeshGL = forwardRef<ThreeGroup, IGLTFMeshGLProps>(({ modelUrl }, ref) 
     borderRadius: '5px',
     left: `${mousePosition.x}px`,
     top: `${mousePosition.y}px`,
-    transform: 'translate(-50%, -50%)', // Optional: Center the tooltip around the mouse pointer
+    transform: 'translate(-50%, -50%)'
   };
 
   return (

@@ -7,22 +7,21 @@ interface KapitelPanelProps {
   chapters: Chapter[];
   onSelect: (index: number) => void;
   onAddChapter?: () => void;
-  onDeleteChapter?: (id: string) => void;
+  onDeleteChapter?: (chapterNumber: number) => void;
 }
 
 const KapitelPanel: React.FC<KapitelPanelProps> = ({ chapters, onSelect, onAddChapter, onDeleteChapter }) => {
   return (
     <div style={{ width: '200px', borderRight: '1px solid #ddd', padding: '10px' }}>
       <h4>Kapitel</h4>
-      {chapters.length >= 2 && (
+      {chapters.length >= 1 && (
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {chapters.map((chapter, index) => (
-            <li key={chapter.id} style={{ marginBottom: '10px', cursor: 'pointer' }} onClick={() => onSelect(index)}>
-              Kapitel {chapter.chapterNumber} 
-              {chapter.title.length > 0 && ( <span>- {chapter.title}</span>)}
+            <li key={chapter.chapterNumber} style={{ marginBottom: '10px', cursor: 'pointer' }} onClick={() => onSelect(index)}>
+              Kapitel {chapter.chapterNumber}
+              {chapter.title.length > 0 && ( <span> - {chapter.title}</span>)}
               {onDeleteChapter && (
-                <FontAwesomeIcon icon={faTrash} 
-                onClick={() => onDeleteChapter(chapter.id)}/>
+                <FontAwesomeIcon icon={faTrash} onClick={() => onDeleteChapter(chapter.chapterNumber)} style={{ marginLeft: '10px', color: 'black', cursor: 'pointer' }} />
               )}
             </li>
           ))}

@@ -1,9 +1,8 @@
 import React, { Suspense, useState, useEffect, useRef } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls, Html, useGLTF, useAnimations } from '@react-three/drei';
-import { storage } from '../api/firebase';
-import { ref, getDownloadURL } from 'firebase/storage';
 import * as THREE from 'three';
+import { loadModel } from '@/helpers/loadModel'; 
 
 interface ModelProps {
   url: string;
@@ -57,8 +56,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelName }) => {
   useEffect(() => {
     const fetchModelUrl = async () => {
       try {
-        const modelRef = ref(storage, `models/${modelName}.glb`);
-        const url = await getDownloadURL(modelRef);
+        const url = await loadModel(`models/${modelName}.glb`);
         setModelUrl(url);
       } catch (error) {
         console.error('Error fetching model URL:', error);
@@ -76,7 +74,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelName }) => {
         <Canvas
           frameloop="always"
           camera={{ position: [25, 13, 20], fov: 17, near: 0.1, far: 100 }}
-          style={{ background: '#fbf4e4' }} //nur um es besser zu erkennen
+          style={{ background: '#fbf4e4' }}
         >
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />

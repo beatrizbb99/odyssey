@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Story, Chapter } from '@/types/types';
 import KapitelPanel from '@/components/KapitelPanel';
-import { fetchStory } from '@/utils/story.database.handler';
+import { fetchStory } from '@/services/story.database.handler';
 
 interface StoryViewProps {
   storyId: string;
 }
 
 const StoryView: React.FC<StoryViewProps> = ({ storyId }) => {
+  storyId = "Uqh2kRXd2pKSZ9KztT76";
   const [story, setStory] = useState<Story | null>(null);
   const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(0);
   const [loading, setLoading] = useState(true);
