@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { Story, Chapter } from '@/types/types';
-import StoryText from '../components/StoryText';
-import { fetchStory, updateChapter, addChapterToStory, deleteChapter } from '@/utils/story.database.handler';
+import StoryText from '@/components/StoryText';
+import { fetchStory, updateChapter, addChapterToStory, deleteChapter } from '@/services/story.database.handler';
 import KapitelPanel from '@/components/KapitelPanel';
 
-interface EditableStoryProps {
-    storyId: string;
-}
-
-const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
+const EditableStory: React.FC = () => {
+    const router = useRouter();
+    const { id: storyId } = router.query;
 
     const [story, setStory] = useState<Story | null>(null);
     const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(0);
@@ -18,17 +17,20 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
 
     useEffect(() => {
         const loadStory = async () => {
-            try {
-                const fetchedStory = await fetchStory(storyId);
-                if (fetchedStory) {
-                    setStory(fetchedStory);
+            if (storyId) {
+                try {
+                    const fetchedStory = await fetchStory(storyId as string);
+                    if (fetchedStory) {
+                        setStory(fetchedStory);
+                        const selectedChapter = fetchedStory.chapters[selectedChapterIndex];
+                        setEditableTitle(selectedChapter.title);
+                        setEditableContent(selectedChapter.content);
+                    }
                     setLoading(false);
-                    const selectedChapter = fetchedStory.chapters[selectedChapterIndex];
-                    setEditableTitle(selectedChapter.title);
-                    setEditableContent(selectedChapter.content);
+                } catch (error) {
+                    console.error('Failed to fetch story:', error);
+                    setLoading(false);  // Laden beenden auch bei Fehler
                 }
-            } catch (error) {
-                console.error('Failed to fetch story:', error);
             }
         };
 
@@ -46,24 +48,11 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
     const handleSave = async () => {
         if (!story) return;
 
-        /*
-        if (story.chapters && !editableTitle) {
-            alert('No title aaah.');
-            return;
-        }
-
-        if(!editableContent) {
-            alert('No content aaah.');
-            return;
-        }*/
-
         const updatedChapter = {
             ...story.chapters[selectedChapterIndex],
             title: editableTitle,
             content: editableContent,
         };
-
-        console.log(updatedChapter);
 
         try {
             const response = await updateChapter(updatedChapter, story.id);
@@ -91,8 +80,7 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
 
         try {
             const currentChapterCount = story.chapters.length;
-
-            const addedChapter = await addChapterToStory(storyId, currentChapterCount);
+            const addedChapter = await addChapterToStory(storyId as string, currentChapterCount);
 
             if (addedChapter) {
                 const updatedChapters = [...story.chapters, addedChapter];
@@ -100,7 +88,6 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
                     ...story,
                     chapters: updatedChapters,
                 });
-
                 setSelectedChapterIndex(updatedChapters.length - 1);
             } else {
                 alert('Failed to add chapter.');
@@ -115,7 +102,7 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
         if (!story) return;
 
         try {
-            const response = await deleteChapter(chapterId, storyId);
+            const response = await deleteChapter(chapterId, storyId as string);
             if (response.success) {
                 const updatedChapters: Chapter[] = response.updatedChapters || [];
 
@@ -134,8 +121,6 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
         }
     };
 
-
-
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -148,7 +133,7 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
 
     return (
         <div style={{ marginLeft: '20px', padding: '10px', flexGrow: 1, display: 'flex' }}>
-            {story.chapters.length >= 1 && (
+            {story.chapters.length > 0 && (
                 <KapitelPanel chapters={story.chapters} onSelect={setSelectedChapterIndex} onAddChapter={handleAddChapter} onDeleteChapter={handleDeleteChapter} />
             )}
             <div>

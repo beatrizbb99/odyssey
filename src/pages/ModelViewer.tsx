@@ -5,6 +5,8 @@ import { storage } from '../api/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
 import * as THREE from 'three';
 
+//muss in components
+
 interface ModelProps {
   url: string;
 }

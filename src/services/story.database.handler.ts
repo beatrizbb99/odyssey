@@ -22,7 +22,7 @@ export const fetchStory = async (storyId: string): Promise<Story | null> => {
       const chaptersQuery = query(chaptersCollectionRef, orderBy('chapterNumber'));
       const chaptersSnapshot = await getDocs(chaptersQuery);
       const chapters = chaptersSnapshot.docs.map(chap => chap.data() as Chapter);
-      return { id: storyDoc.id, title: storyData.title || '', chapters };
+      return { id: storyDoc.id, title: storyData.title || '', chapters, categories: storyData.categories, description: storyData.description };
     } else {
       console.error("Story does not exist");
       return null;
@@ -107,5 +107,24 @@ export const deleteChapter = async (deletedChapterId: string, storyId: string) =
   } catch (error) {
     console.error('Error deleting chapter:', error);
     return { success: false, updateChapters: [] };
+  }
+};
+
+export const saveStory = async (story: Story): Promise<{ success: boolean; id?: string }> => {
+  try {
+    const storyRef = collection(firestore, 'Stories');
+    const storyDocRef = doc(storyRef);
+
+    await setDoc( storyDocRef, {
+      id: storyDocRef.id,
+      title: story.title,
+      description: story.description,
+      categories: story.categories
+    });
+
+    return { success: true, id: storyDocRef.id };
+  } catch (error) {
+    console.error('Error saving story:', error);
+    return { success: false };
   }
 };
