@@ -82,41 +82,48 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
 
     const handleSave = async () => {
         if (!story) return;
-
+    
         // Save all chapters with the updated title and content for the selected chapter
         const updatedChapters = story.chapters.map((chapter, index) =>
             index === selectedChapterIndex ? { ...chapter, title: editableChapterTitle, content: editableContent } : chapter
         );
-
+    
         console.log("save: ", updatedChapters);
-
-        let updatedStory: Story = {
+    
+        let tempStory: Story = {
             ...story,
             title: editableStoryTitle,
             chapters: updatedChapters
         };
-
-        console.log("before: ", updatedStory);
+    
+        console.log("before: ", tempStory);
         try {
+            let updatedStory: Story;
+    
             if (story.id) {
-                await updateStory(updatedStory);
-                setStory(updatedStory);
-            } else {
-                const createResult = await createStory(updatedStory);
+                const createResult = await updateStory(tempStory);
                 if (createResult.success && createResult.story) {
-                    setStory(createResult.story);
+                    updatedStory = createResult.story;
+                } else {
+                    throw new Error('Failed to update story');
+                }
+            } else {
+                const createResult = await createStory(tempStory);
+                if (createResult.success && createResult.story) {
+                    updatedStory = createResult.story;
                 } else {
                     throw new Error('Failed to create story');
                 }
             }
-            console.log(story);
+    
+            setStory(updatedStory);
+            console.log(updatedStory);
             alert('Story saved successfully');
         } catch (error) {
             console.error('Failed to save story:', error);
             alert('Failed to save story');
         }
-    };
-
+    };    
 
 
     const handleAddChapter = () => {

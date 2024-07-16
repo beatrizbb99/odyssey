@@ -38,32 +38,30 @@ export const createStory = async (newStory: Story): Promise<{ success: boolean, 
   try {
     const storiesCollectionRef = collection(firestore, 'Stories');
 
-    // Create the main story document and get the reference
+    // Create the main story and get the document reference
     const storyDocRef = doc(storiesCollectionRef);
 
-    // Set the ID of the story to the Firestore document ID
+    // Create the main story in Firestore and set the ID to the document ID
     await setDoc(storyDocRef, {
       id: storyDocRef.id,
       title: newStory.title,
       categories: newStory.categories
     });
 
-    // Save the chapters in a sub-collection 'Kapitel' under the main story document
+    // Save the chapters in a subcollection 'Chapters' under the main story document
     const chaptersCollectionRef = collection(storyDocRef, 'Kapitel');
 
-    // Iterate through all chapters, update IDs, and add them to the sub-collection
-    const updatedChapters: Chapter[] = [];
-    for (const chapter of newStory.chapters) {
+    // Iterate through all chapters and add them to the subcollection
+    const chaptersWithId = await Promise.all(newStory.chapters.map(async (chapter) => {
       const chapterDocRef = doc(chaptersCollectionRef); // Add chapter and get document reference
-      chapter.id = chapterDocRef.id; // Set chapter ID to the Firestore document ID
-      updatedChapters.push(chapter);
-      await setDoc(chapterDocRef, chapter); // Save chapter document
-    }
+      await setDoc(chapterDocRef, {
+        ...chapter,
+        id: chapterDocRef.id // Set the chapter ID to the document ID in Firestore
+      });
+      return { ...chapter, id: chapterDocRef.id };
+    }));
 
-    // Return success and the updated story object with IDs
-    const updatedStory: Story = { ...newStory, id: storyDocRef.id, chapters: updatedChapters };
-    console.log("return: ", updatedStory);
-    return { success: true, story: updatedStory };
+    return { success: true, story: { ...newStory, id: storyDocRef.id, chapters: chaptersWithId } };
   } catch (error) {
     console.error('Error creating story:', error);
     return { success: false };
@@ -72,25 +70,37 @@ export const createStory = async (newStory: Story): Promise<{ success: boolean, 
 
 
 
-export const updateStory = async (story: Story): Promise<{ success: boolean }> => {
+export const updateStory = async (updatedStory: Story): Promise<{ success: boolean, story?: Story }> => {
   try {
-    const storyDocRef = doc(firestore, 'Stories', story.id);
+    const storyDocRef = doc(firestore, 'Stories', updatedStory.id);
 
     // Update the story document
     await updateDoc(storyDocRef, {
-      title: story.title,
-      categories: story.categories
+      title: updatedStory.title,
+      categories: updatedStory.categories
     });
 
     // Update each chapter document
     const chaptersCollectionRef = collection(storyDocRef, 'Kapitel');
-    for (const chapter of story.chapters) {
-      const chapterDocRef = doc(chaptersCollectionRef, chapter.id);
-      console.log(chapter);
-      await setDoc(chapterDocRef, chapter);
-    }
 
-    return { success: true };
+    // Iterate through all chapters and add them to the subcollection
+    const updatedChapters = await Promise.all(updatedStory.chapters.map(async (chapter) => {
+      if(chapter.id) {
+        const chapterDocRef = doc(chaptersCollectionRef, chapter.id);
+        await setDoc(chapterDocRef, {
+          ...chapter,
+          id: chapterDocRef.id
+        });
+      } else {
+        const chapterDocRef = doc(chaptersCollectionRef)
+        await setDoc(chapterDocRef, {
+          ...chapter,
+        });
+      }
+      return { ...chapter };
+    }));
+
+    return { success: true, story: { ...updatedStory, chapters: updatedChapters } };
   } catch (error) {
     console.error('Error updating story:', error);
     throw new Error('Failed to update story');
