@@ -1,15 +1,13 @@
-import React, { useRef } from 'react';
+import React, { Suspense, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import ModelViewer from './ModelViewer';
 import Headline from './Headline';
-import styles from '@/styles/Headline.module.css'; // Verwenden Sie .scss für SCSS-Dateien
 
 const Home: React.FC = () => {
-  const canvasRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className={styles.container}>
+    <div>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -22,11 +20,11 @@ const Home: React.FC = () => {
         >
         </motion.h1>
       </motion.div>
-      {/* <div className={styles.modelContainer}>
-         <ModelViewer modelName="reading_room" />
-      </div> */}
-      <div className={styles.headlineContainer}>
-        <Headline/>
+      <div>
+       {/*  <Suspense fallback={<Headline />}>
+        </Suspense> */}
+        <ModelViewer modelName="reading_room"/>
+          <Headline/>
       </div>
       <Link href="/page2" passHref>
         <motion.span

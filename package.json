@@ -15,6 +15,7 @@
     "@react-three/drei": "^9.108.1",
     "@react-three/fiber": "^8.16.8",
     "@types/three": "^0.166.0",
+    "classnames": "^2.5.1",
     "firebase": "^10.12.2",
     "framer-motion": "^11.2.10",
     "gsap": "^3.12.5",

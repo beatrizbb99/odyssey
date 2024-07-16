@@ -76,14 +76,12 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelName }) => {
       {modelUrl && (
         <Canvas
           frameloop="always"
-          camera={{ position: [25, 13, 20], fov: 17, near: 0.1, far: 100 }}
+          camera={{ position: [25, 13, 20], fov: 12, near: 0.1, far: 100 }}
         >
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
           <directionalLight position={[-5, -5, -5]} intensity={0.5} />
-          <Suspense fallback={<Html><div>Loading...</div></Html>}>
             <Model url={modelUrl} />
-          </Suspense>
           <OrbitControls />
         </Canvas>
       )}
