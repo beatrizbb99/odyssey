@@ -148,6 +148,22 @@ export const saveStory = async (story: Story): Promise<{ success: boolean; id?: 
   }
 };
 
+export const updateStory = async (updatedStory: Story): Promise<{ success: boolean }> => {
+  try {
+      const storyDocRef = doc(firestore, 'Stories', updatedStory.id);
+      await updateDoc(storyDocRef, {
+          title: updatedStory.title,
+          description: updatedStory.description,
+          categories: updatedStory.categories
+      });
+
+      return { success: true };
+  } catch (error) {
+      console.error('Error updating story:', error);
+      return { success: false };
+  }
+};
+
 export const saveContentToStorage = async (storyId: string, chapterId: string, content: string) => {
   try {
     const storageRefPath = ref(storage, `stories/${storyId}/${chapterId}.txt`);

@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Story, Chapter } from '@/types/types';
-import StoryText from '@/components/StoryText';
-import { fetchStory, updateChapter, addChapterToStory, deleteChapter, saveContentToStorage } from '@/services/story.database.handler';
-import KapitelPanel from '@/components/KapitelPanel';
+import { Story } from '@/types/types';
+import { fetchStory } from '@/services/story.database.handler';
+import EditStory from '@/components/EditStory';
+import EditChapters from '@/components/EditChapters';
 
 const EditableStory: React.FC = () => {
     const router = useRouter();
     const { id: storyId } = router.query;
 
     const [story, setStory] = useState<Story | null>(null);
-    const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(0);
-    const [loading, setLoading] = useState(true);
-    const [editableTitle, setEditableTitle] = useState<string>('');
-    const [editableContent, setEditableContent] = useState<string>('');
+    const [mode, setMode] = useState<'editStory' | 'editChapters'>('editChapters');
 
     useEffect(() => {
         const loadStory = async () => {
@@ -22,133 +19,37 @@ const EditableStory: React.FC = () => {
                     const fetchedStory = await fetchStory(storyId as string);
                     if (fetchedStory) {
                         setStory(fetchedStory);
-                        const selectedChapter = fetchedStory.chapters[selectedChapterIndex];
-                        setEditableTitle(selectedChapter.title);
-                        setEditableContent(selectedChapter.content);
                     }
-                    setLoading(false);
                 } catch (error) {
                     console.error('Failed to fetch story:', error);
-                    setLoading(false);  // Laden beenden auch bei Fehler
                 }
             }
         };
 
         loadStory();
-    }, [storyId, selectedChapterIndex]);
+    }, [storyId]);
 
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEditableTitle(e.target.value);
+    const switchToEditStoryMode = () => {
+        setMode('editStory');
     };
 
-    const handleContentChange = (newContent: string) => {
-        setEditableContent(newContent);
+    const switchToEditChaptersMode = () => {
+        setMode('editChapters');
     };
 
-    const handleSave = async () => {
-        if (!story) return;
-
-        const updatedChapter = {
-            ...story.chapters[selectedChapterIndex],
-            title: editableTitle,
-            content: editableContent,
-        };
-
-        try {
-            const response = await updateChapter(updatedChapter, story.id);
-            if (response.success) {
-                const updatedChapters = [...story.chapters];
-                updatedChapters[selectedChapterIndex] = updatedChapter;
-
-                const updatedStory = {
-                    ...story,
-                    chapters: updatedChapters,
-                };
-
-                setStory(updatedStory);
-
-                await saveContentToStorage(story.id, updatedChapter.id, editableContent);
-            } else {
-                alert('Failed to update chapter.');
-            }
-        } catch (error) {
-            console.error('Error updating chapter:', error);
-            alert('Failed to update chapter. Please try again.');
-        }
-    };
-
-    const handleAddChapter = async () => {
-        if (!story) return;
-
-        try {
-            const currentChapterCount = story.chapters.length;
-            const addedChapter = await addChapterToStory(storyId as string, currentChapterCount);
-
-            if (addedChapter) {
-                const updatedChapters = [...story.chapters, addedChapter];
-                setStory({
-                    ...story,
-                    chapters: updatedChapters,
-                });
-                setSelectedChapterIndex(updatedChapters.length - 1);
-            } else {
-                alert('Failed to add chapter.');
-            }
-        } catch (error) {
-            console.error('Error adding chapter:', error);
-            alert('Failed to add chapter. Please try again.');
-        }
-    };
-
-    const handleDeleteChapter = async (chapterId: string) => {
-        if (!story) return;
-
-        try {
-            const response = await deleteChapter(chapterId, storyId as string);
-            if (response.success) {
-                const updatedChapters: Chapter[] = response.updatedChapters || [];
-
-                setStory({
-                    ...story,
-                    chapters: updatedChapters,
-                });
-
-                setSelectedChapterIndex(prevIndex => Math.max(prevIndex - 1, 0));
-            } else {
-                alert('Failed to delete chapter.');
-            }
-        } catch (error) {
-            console.error('Error deleting chapter:', error);
-            alert('Failed to delete chapter. Please try again.');
-        }
-    };
-
-    if (loading) {
+    if (!story) {
         return <div>Loading...</div>;
     }
 
-    if (!story) {
-        return <div>No story found</div>;
-    }
-
-    const selectedChapter = story.chapters[selectedChapterIndex];
-
     return (
-        <div style={{ marginLeft: '20px', padding: '10px', flexGrow: 1, display: 'flex' }}>
-            {story.chapters.length > 0 && (
-                <KapitelPanel chapters={story.chapters} onSelect={setSelectedChapterIndex} onAddChapter={handleAddChapter} onDeleteChapter={handleDeleteChapter} />
-            )}
-            <div>
-                <h2>{story.title}</h2>
-                <input
-                    type="text"
-                    value={editableTitle}
-                    onChange={handleTitleChange}
-                    style={{ fontSize: '16px', width: '100%', marginBottom: '10px' }}
-                />
-                <StoryText initialText={editableContent} onTextChange={handleContentChange} />
-                <button onClick={handleSave}>Save Chapter</button>
-            </div>
+        <div>
+            {/* Buttons oder Links zum Wechseln zwischen den Modi */}
+            <button onClick={switchToEditStoryMode}>Details zur Geschichte</button>
+            <button onClick={switchToEditChaptersMode}>Kapitel</button>
+
+            {/* Abhängig vom aktuellen Modus die entsprechende Komponente anzeigen */}
+            {mode === 'editStory' && <EditStory story={story} onUpdateStory={setStory} />}
+            {mode === 'editChapters' && <EditChapters story={story} onUpdateStory={setStory} />}
         </div>
     );
 };
