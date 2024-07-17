@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Story, Chapter } from '@/types/types';
 import StoryText from '@/components/StoryText';
-import { fetchStory, updateChapter, addChapterToStory, deleteChapter } from '@/services/story.database.handler';
+import { fetchStory, updateChapter, addChapterToStory, deleteChapter, saveContentToStorage } from '@/services/story.database.handler';
 import KapitelPanel from '@/components/KapitelPanel';
 
 const EditableStory: React.FC = () => {
@@ -66,6 +66,8 @@ const EditableStory: React.FC = () => {
                 };
 
                 setStory(updatedStory);
+
+                await saveContentToStorage(story.id, updatedChapter.id, editableContent);
             } else {
                 alert('Failed to update chapter.');
             }
