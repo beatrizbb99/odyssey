@@ -1,6 +1,6 @@
 import { firestore, storage } from '@/api/firebase';
 import { uploadBytes, ref, getDownloadURL, deleteObject } from 'firebase/storage';
-import { doc, getDoc, collection, getDocs, query, orderBy, addDoc, updateDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, query, orderBy, addDoc, updateDoc, setDoc, deleteDoc, where } from 'firebase/firestore';
 import { Story, Chapter } from '@/types/types';
 
 export const fetchStory = async (storyId: string): Promise<Story | null> => {
@@ -53,7 +53,7 @@ export const updateChapter = async (updatedChapter: Chapter, storyId: string): P
 
     // Save content to Firebase Storage
     await saveContentToStorage(storyId, updatedChapter.id, updatedChapter.content);
-    
+
     return { success: true };
   } catch (error) {
     console.error('Error updating chapter:', error);
@@ -150,17 +150,17 @@ export const saveStory = async (story: Story): Promise<{ success: boolean; id?: 
 
 export const updateStory = async (updatedStory: Story): Promise<{ success: boolean }> => {
   try {
-      const storyDocRef = doc(firestore, 'Stories', updatedStory.id);
-      await updateDoc(storyDocRef, {
-          title: updatedStory.title,
-          description: updatedStory.description,
-          categories: updatedStory.categories
-      });
+    const storyDocRef = doc(firestore, 'Stories', updatedStory.id);
+    await updateDoc(storyDocRef, {
+      title: updatedStory.title,
+      description: updatedStory.description,
+      categories: updatedStory.categories
+    });
 
-      return { success: true };
+    return { success: true };
   } catch (error) {
-      console.error('Error updating story:', error);
-      return { success: false };
+    console.error('Error updating story:', error);
+    return { success: false };
   }
 };
 
@@ -171,5 +171,39 @@ export const saveContentToStorage = async (storyId: string, chapterId: string, c
     console.log('Content saved to Firebase Storage.');
   } catch (error) {
     console.error('Error saving content to Firebase Storage:', error);
+  }
+};
+
+export const getStoriesFromCategory = async (categoryId: string): Promise<Story[]> => {
+  try {
+    if (!categoryId) {
+      throw new Error('Invalid categoryId');
+    }
+    
+    const storiesCollectionRef = collection(firestore, 'Stories');
+    const storiesQuery = query(storiesCollectionRef, where('categories', 'array-contains', categoryId));
+    const querySnapshot = await getDocs(storiesQuery);
+
+    const stories: Story[] = querySnapshot.docs.map(doc => {
+      const storyData = doc.data();
+      const story: Story = {
+        id: doc.id,
+        title: storyData.title,
+        description: storyData.description,
+        categories: storyData.categories,
+        chapters: []
+      };
+
+      if (storyData.original) {
+        story.original = storyData.original;
+      }
+
+      return story;
+    });
+
+    return stories;
+  } catch (error) {
+    console.error('Error fetching stories from category:', error);
+    return [];
   }
 };

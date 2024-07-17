@@ -11,6 +11,7 @@ export interface Story {
     chapters: Chapter[];
     categories: string[];
     description: string;
+    original?: boolean;
 }
 
 export interface Book {
