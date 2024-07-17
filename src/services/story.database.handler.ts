@@ -1,4 +1,5 @@
-import { firestore } from '@/api/firebase';
+import { firestore, storage } from '@/api/firebase';
+import { uploadBytes, ref, getDownloadURL, deleteObject } from 'firebase/storage';
 import { doc, getDoc, collection, getDocs, query, orderBy, addDoc, updateDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { Story, Chapter } from '@/types/types';
 
@@ -22,7 +23,16 @@ export const fetchStory = async (storyId: string): Promise<Story | null> => {
       const chaptersQuery = query(chaptersCollectionRef, orderBy('chapterNumber'));
       const chaptersSnapshot = await getDocs(chaptersQuery);
       const chapters = chaptersSnapshot.docs.map(chap => chap.data() as Chapter);
-      return { id: storyDoc.id, title: storyData.title || '', chapters };
+
+      // Fetch content from Firebase Storage
+      for (let chapter of chapters) {
+        const contentUrl = await getDownloadURL(ref(storage, `stories/${storyId}/${chapter.id}.txt`));
+        const response = await fetch(contentUrl);
+        const text = await response.text();
+        chapter.content = text;
+      }
+
+      return { id: storyDoc.id, title: storyData.title || '', chapters, categories: storyData.categories, description: storyData.description };
     } else {
       console.error("Story does not exist");
       return null;
@@ -33,14 +43,17 @@ export const fetchStory = async (storyId: string): Promise<Story | null> => {
   }
 };
 
-
 export const updateChapter = async (updatedChapter: Chapter, storyId: string): Promise<{ success: boolean }> => {
   try {
-    const storyDocRef = doc(firestore, 'Stories', storyId, 'Kapitel', updatedChapter.id);
-    await updateDoc(storyDocRef, {
+    // Update title in Firestore
+    const chapterDocRef = doc(firestore, 'Stories', storyId, 'Kapitel', updatedChapter.id);
+    await updateDoc(chapterDocRef, {
       title: updatedChapter.title,
-      content: updatedChapter.content
     });
+
+    // Save content to Firebase Storage
+    await saveContentToStorage(storyId, updatedChapter.id, updatedChapter.content);
+    
     return { success: true };
   } catch (error) {
     console.error('Error updating chapter:', error);
@@ -54,7 +67,6 @@ export const addChapterToStory = async (storyId: string, currentChapterCount: nu
 
     const docRef = await addDoc(chaptersCollectionRef, {
       title: '',
-      content: '',
       chapterNumber: currentChapterCount + 1
     });
 
@@ -67,6 +79,9 @@ export const addChapterToStory = async (storyId: string, currentChapterCount: nu
 
     await setDoc(doc(chaptersCollectionRef, docRef.id), newChapter);
 
+    // Save initial empty content to Firebase Storage
+    await saveContentToStorage(storyId, docRef.id, '');
+
     return newChapter;
   } catch (error) {
     console.error('Error adding chapter to story:', error);
@@ -78,6 +93,10 @@ export const deleteChapter = async (deletedChapterId: string, storyId: string) =
   try {
     const storyDocRef = doc(firestore, 'Stories', storyId, 'Kapitel', deletedChapterId);
     await deleteDoc(storyDocRef);
+
+    // Delete content from Firebase Storage
+    const contentRef = ref(storage, `stories/${storyId}/${deletedChapterId}.txt`);
+    await deleteObject(contentRef);
 
     const chaptersCollectionRef = collection(firestore, 'Stories', storyId, 'Kapitel');
     const q = query(chaptersCollectionRef, orderBy('chapterNumber'));
@@ -99,13 +118,58 @@ export const deleteChapter = async (deletedChapterId: string, storyId: string) =
       if (chapter.chapterNumber !== i + 1) {
         const chapterDocRef = doc(firestore, 'Stories', storyId, 'Kapitel', chapter.id);
         await updateDoc(chapterDocRef, { chapterNumber: i + 1 });
-        updatedChapters[i].chapterNumber = i + 1; 
+        updatedChapters[i].chapterNumber = i + 1;
       }
     }
 
     return { success: true, updatedChapters };
   } catch (error) {
     console.error('Error deleting chapter:', error);
-    return { success: false, updateChapters: [] };
+    return { success: false, updatedChapters: [] };
+  }
+};
+
+export const saveStory = async (story: Story): Promise<{ success: boolean; id?: string }> => {
+  try {
+    const storyRef = collection(firestore, 'Stories');
+    const storyDocRef = doc(storyRef);
+
+    await setDoc(storyDocRef, {
+      id: storyDocRef.id,
+      title: story.title,
+      description: story.description,
+      categories: story.categories
+    });
+
+    return { success: true, id: storyDocRef.id };
+  } catch (error) {
+    console.error('Error saving story:', error);
+    return { success: false };
+  }
+};
+
+export const updateStory = async (updatedStory: Story): Promise<{ success: boolean }> => {
+  try {
+      const storyDocRef = doc(firestore, 'Stories', updatedStory.id);
+      await updateDoc(storyDocRef, {
+          title: updatedStory.title,
+          description: updatedStory.description,
+          categories: updatedStory.categories
+      });
+
+      return { success: true };
+  } catch (error) {
+      console.error('Error updating story:', error);
+      return { success: false };
+  }
+};
+
+export const saveContentToStorage = async (storyId: string, chapterId: string, content: string) => {
+  try {
+    const storageRefPath = ref(storage, `stories/${storyId}/${chapterId}.txt`);
+    await uploadBytes(storageRefPath, new Blob([content], { type: 'text/plain' }));
+    console.log('Content saved to Firebase Storage.');
+  } catch (error) {
+    console.error('Error saving content to Firebase Storage:', error);
   }
 };

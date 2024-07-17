@@ -14,7 +14,7 @@ const KapitelPanel: React.FC<KapitelPanelProps> = ({ chapters, onSelect, onAddCh
   return (
     <div style={{ width: '200px', borderRight: '1px solid #ddd', padding: '10px' }}>
       <h4>Kapitel</h4>
-      {chapters.length >= 2 && (
+      {chapters.length > 0 && (
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {chapters.map((chapter, index) => (
             <li key={chapter.id} style={{ marginBottom: '10px', cursor: 'pointer' }} onClick={() => onSelect(index)}>

@@ -1,39 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Story, Chapter } from '@/types/types';
-import StoryText from '../components/StoryText';
-import { fetchStory, updateChapter, addChapterToStory, deleteChapter } from '@/utils/story.database.handler';
+import StoryText from '@/components/StoryText';
+import { fetchStory, updateChapter, addChapterToStory, deleteChapter, saveContentToStorage } from '@/services/story.database.handler';
 import KapitelPanel from '@/components/KapitelPanel';
 
-interface EditableStoryProps {
-    storyId: string;
+interface EditChaptersProps {
+    story: Story; // Die gesamte Story als Prop übergeben
+    onUpdateStory: (updatedStory: Story) => void; // Funktion zum Aktualisieren der Story im Elternkomponenten
 }
 
-const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
-
-    const [story, setStory] = useState<Story | null>(null);
+const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => {
     const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(0);
     const [loading, setLoading] = useState(true);
     const [editableTitle, setEditableTitle] = useState<string>('');
     const [editableContent, setEditableContent] = useState<string>('');
 
     useEffect(() => {
-        const loadStory = async () => {
-            try {
-                const fetchedStory = await fetchStory(storyId);
-                if (fetchedStory) {
-                    setStory(fetchedStory);
-                    setLoading(false);
-                    const selectedChapter = fetchedStory.chapters[selectedChapterIndex];
-                    setEditableTitle(selectedChapter.title);
-                    setEditableContent(selectedChapter.content);
-                }
-            } catch (error) {
-                console.error('Failed to fetch story:', error);
-            }
-        };
-
-        loadStory();
-    }, [storyId, selectedChapterIndex]);
+        if (story && story.chapters.length > 0) {
+            const selectedChapter = story.chapters[selectedChapterIndex];
+            setEditableTitle(selectedChapter.title);
+            setEditableContent(selectedChapter.content);
+            setLoading(false);
+        }
+    }, [story, selectedChapterIndex]);
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEditableTitle(e.target.value);
@@ -46,24 +35,11 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
     const handleSave = async () => {
         if (!story) return;
 
-        /*
-        if (story.chapters && !editableTitle) {
-            alert('No title aaah.');
-            return;
-        }
-
-        if(!editableContent) {
-            alert('No content aaah.');
-            return;
-        }*/
-
         const updatedChapter = {
             ...story.chapters[selectedChapterIndex],
             title: editableTitle,
             content: editableContent,
         };
-
-        console.log(updatedChapter);
 
         try {
             const response = await updateChapter(updatedChapter, story.id);
@@ -76,7 +52,9 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
                     chapters: updatedChapters,
                 };
 
-                setStory(updatedStory);
+                onUpdateStory(updatedStory); // Aktualisierte Story an Elternkomponente zurückgeben
+
+                await saveContentToStorage(story.id, updatedChapter.id, editableContent);
             } else {
                 alert('Failed to update chapter.');
             }
@@ -91,16 +69,15 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
 
         try {
             const currentChapterCount = story.chapters.length;
-
-            const addedChapter = await addChapterToStory(storyId, currentChapterCount);
+            const addedChapter = await addChapterToStory(story.id, currentChapterCount);
 
             if (addedChapter) {
                 const updatedChapters = [...story.chapters, addedChapter];
-                setStory({
+                const updatedStory = {
                     ...story,
                     chapters: updatedChapters,
-                });
-
+                };
+                onUpdateStory(updatedStory); // Aktualisierte Story an Elternkomponente zurückgeben
                 setSelectedChapterIndex(updatedChapters.length - 1);
             } else {
                 alert('Failed to add chapter.');
@@ -115,14 +92,16 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
         if (!story) return;
 
         try {
-            const response = await deleteChapter(chapterId, storyId);
+            const response = await deleteChapter(chapterId, story.id);
             if (response.success) {
                 const updatedChapters: Chapter[] = response.updatedChapters || [];
 
-                setStory({
+                const updatedStory = {
                     ...story,
                     chapters: updatedChapters,
-                });
+                };
+
+                onUpdateStory(updatedStory); // Aktualisierte Story an Elternkomponente zurückgeben
 
                 setSelectedChapterIndex(prevIndex => Math.max(prevIndex - 1, 0));
             } else {
@@ -133,8 +112,6 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
             alert('Failed to delete chapter. Please try again.');
         }
     };
-
-
 
     if (loading) {
         return <div>Loading...</div>;
@@ -148,7 +125,7 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
 
     return (
         <div style={{ marginLeft: '20px', padding: '10px', flexGrow: 1, display: 'flex' }}>
-            {story.chapters.length >= 1 && (
+            {story.chapters.length > 0 && (
                 <KapitelPanel chapters={story.chapters} onSelect={setSelectedChapterIndex} onAddChapter={handleAddChapter} onDeleteChapter={handleDeleteChapter} />
             )}
             <div>
@@ -166,4 +143,4 @@ const EditableStory: React.FC<EditableStoryProps> = ({ storyId }) => {
     );
 };
 
-export default EditableStory;
+export default EditChapters;
