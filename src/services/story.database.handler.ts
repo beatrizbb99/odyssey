@@ -32,7 +32,14 @@ export const fetchStory = async (storyId: string): Promise<Story | null> => {
         chapter.content = text;
       }
 
-      return { id: storyDoc.id, title: storyData.title || '', chapters, categories: storyData.categories, description: storyData.description };
+      return {
+        id: storyDoc.id,
+        title: storyData.title || '',
+        chapters,
+        categories: storyData.categories,
+        description: storyData.description,
+        modelName: storyData.modelName || 'basic_book_test', // Neues Attribut mit Standardwert
+      };
     } else {
       console.error("Story does not exist");
       return null;
@@ -138,7 +145,8 @@ export const saveStory = async (story: Story): Promise<{ success: boolean; id?: 
       id: storyDocRef.id,
       title: story.title,
       description: story.description,
-      categories: story.categories
+      categories: story.categories,
+      modelName: story.modelName || 'basic_book_test', // if nothing:  basic_book
     });
 
     return { success: true, id: storyDocRef.id };
@@ -154,7 +162,8 @@ export const updateStory = async (updatedStory: Story): Promise<{ success: boole
     await updateDoc(storyDocRef, {
       title: updatedStory.title,
       description: updatedStory.description,
-      categories: updatedStory.categories
+      categories: updatedStory.categories,
+      modelName: updatedStory.modelName || 'basic_book_test', //if nothing: basic_book
     });
 
     return { success: true };
@@ -191,7 +200,8 @@ export const getStoriesFromCategory = async (categoryId: string): Promise<Story[
         title: storyData.title,
         description: storyData.description,
         categories: storyData.categories,
-        chapters: []
+        chapters: [],
+        modelName: storyData.modelName || 'basic_book_test', //if nothing: basic_book
       };
 
       if (storyData.original) {

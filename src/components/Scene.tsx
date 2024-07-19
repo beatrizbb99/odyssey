@@ -21,7 +21,7 @@ const Scene: React.FC = () => {
 
   useEffect(() => {
     const fetchModelUrl = async () => {
-      const url = await loadModel('models/shelf_test.glb');
+      const url = await loadModel('models/shelf.glb');
       setModelUrl(url);
     };
 

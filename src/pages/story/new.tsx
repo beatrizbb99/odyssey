@@ -7,6 +7,7 @@ import { Story } from "@/types/types";
 const CreateStory: React.FC = () => {
     const [title, setTitle] = useState<string>('');
     const [categories, setCategories] = useState<string[]>([]);
+    const [modelName, setModel] = useState<string>('');
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [description, setDescription] = useState<string>('');
     const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
@@ -54,6 +55,7 @@ const CreateStory: React.FC = () => {
     const handleSaveStory = async () => {
         const newStory: Story = {
             title,
+            modelName,
             chapters: [], // Leere Kapitel-Liste für eine neue Story
             categories: selectedCategories,
             description,

@@ -12,11 +12,5 @@ export interface Story {
     categories: string[];
     description: string;
     original?: boolean;
-}
-
-export interface Book {
-    id: string;
-    name: string;
-    text: string;
-    model: string;
+    modelName: string;
 }

@@ -4,6 +4,7 @@ import { Story } from "@/types/types";
 
 export const useStoryForm = (initialStory: Story | null) => {
     const [title, setTitle] = useState<string>(initialStory?.title || '');
+    const [model, setModel] = useState<string>('basic_book_test');
     const [categories, setCategories] = useState<string[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>(initialStory?.categories || []);
     const [description, setDescription] = useState<string>(initialStory?.description || '');
@@ -55,6 +56,7 @@ export const useStoryForm = (initialStory: Story | null) => {
     return {
         title,
         setTitle,
+        model,
         categories,
         selectedCategories,
         description,

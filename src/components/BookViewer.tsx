@@ -4,14 +4,13 @@ import { OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
 import { storage } from '../api/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
 import * as THREE from 'three';
+import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
 
-//muss in components
-
-interface ModelProps {
+interface BookProps {
   url: string;
 }
 
-const Model: React.FC<ModelProps> = ({ url }) => {
+const Model: React.FC<BookProps> = ({ url }) => {
   const { scene, animations } = useGLTF(url);
   const group = useRef<THREE.Group>(null);
   const { actions } = useAnimations(animations, group);
@@ -48,11 +47,12 @@ const Model: React.FC<ModelProps> = ({ url }) => {
   );
 };
 
-interface ModelViewerProps {
-  modelName: string;
+interface BookViewerProps {
+  bookName: string;
 }
 
-const ModelViewer: React.FC<ModelViewerProps> = ({ modelName }) => {
+const BookViewer: React.FC<BookViewerProps> = ({ bookName }) => {
+    console.log("NAME: ", bookName);
   const [modelUrl, setModelUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -60,8 +60,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelName }) => {
   useEffect(() => {
     const fetchModelUrl = async () => {
       try {
-        const modelRef = ref(storage, `models/${modelName}.glb`);
-        const url = await getDownloadURL(modelRef);
+        const bookRef = ref(storage, `models/${bookName}.glb`); //change to bookname
+        const url = await getDownloadURL(bookRef);
         setModelUrl(url);
       } catch (error) {
         console.error('Error fetching model URL:', error);
@@ -70,11 +70,10 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelName }) => {
     };
 
     fetchModelUrl();
-  }, [modelName]);
+  }, [bookName]);
 
 
-  //  TODO: Beleuchtung einstellen!
-  //  glTF-Viewer nutzen zum gegenchecken
+    //  TODO: Positionierung + Beleuchtung!
 
   return (
     <div style={{ width: '100vw', height: '100vh' }} ref={canvasRef}>
@@ -95,4 +94,4 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelName }) => {
   );
 };
 
-export default ModelViewer;
+export default BookViewer;
