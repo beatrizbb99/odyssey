@@ -11,6 +11,10 @@ const CategoryStoriesPage: React.FC = () => {
     const [stories, setStories] = useState<Story[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const backToShelf = () => {
+        router.push('/category/shelf')
+    }
+
     useEffect(() => {
         if (!categoryId) {
             console.error('Invalid categoryId:', categoryId);
@@ -35,6 +39,7 @@ const CategoryStoriesPage: React.FC = () => {
     return (
         <div>
             <h1>{categoryId}</h1>
+            <button onClick={backToShelf}>Zurück zur Auswahl</button>
             {stories.map((story, index) => (
                 <Book key={index} story={story} />
             ))}

@@ -36,6 +36,10 @@ const CreateStory: React.FC = () => {
         setDescription(e.target.value);
     };
 
+    const createCancel = () => {
+        router.push('/category/shelf')
+    }
+
     const handleCategoryChange = (category: string) => {
         const isChecked = selectedCategories.includes(category);
         if (isChecked) {
@@ -71,7 +75,7 @@ const CreateStory: React.FC = () => {
                 {isFormValid ? (
                     <button onClick={handleSaveStory}>Weiter</button>
                 ) : (
-                    <button>Abbrechen</button>
+                    <button onClick={createCancel}>Abbrechen</button>
                 )}
             </div>
             <div>
