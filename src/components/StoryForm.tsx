@@ -19,6 +19,8 @@ interface StoryFormProps {
     onCoverChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     error?: string | null;
     onCancel: () => void;
+    color: string;
+    onColorChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const StoryForm: React.FC<StoryFormProps> = ({
@@ -27,6 +29,8 @@ const StoryForm: React.FC<StoryFormProps> = ({
     categories,
     selectedCategories,
     loadingCategories,
+    color,
+    onColorChange,
     onTitleChange,
     onDescriptionChange,
     onCategoryChange,
@@ -82,6 +86,27 @@ const StoryForm: React.FC<StoryFormProps> = ({
                             <p className={styles.charCount}>
                                 {description.length}/{maxDescriptionLength} characters
                             </p>
+                        </div>
+                        <div className={styles.colorSelectionWrapper}>
+                        <label htmlFor="color">Farbe für das Buch-Modell:</label>
+                            <div
+                                className={styles.colorDisplay}
+                                style={{ backgroundColor: color }}
+                            >
+                            </div>
+                            <select
+                                id="color"
+                                value={color}
+                                onChange={onColorChange}
+                                className={styles.colorSelection}
+                            >
+                                <option></option>
+                                <option value="red" style={{ backgroundColor: 'red', color: 'white' }}>Red</option>
+                                <option value="green" style={{ backgroundColor: 'green', color: 'white' }}>Green</option>
+                                <option value="blue" style={{ backgroundColor: 'blue', color: 'white' }}>Blue</option>
+                                <option value="pink" style={{ backgroundColor: 'pink', color: 'black' }}>Pink</option>
+                                <option value="yellow" style={{ backgroundColor: 'yellow', color: 'black' }}>Yellow</option>
+                            </select>
                         </div>
                         <div className={styles.categoryGroup}>
                             <div className={styles.categoryContainer}>

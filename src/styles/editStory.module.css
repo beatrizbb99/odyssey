@@ -27,3 +27,17 @@
 .selectionContainer .button.active {
     border-bottom-color: var(--button-color);
 }
+
+.infoContainer {
+    background-color: white;
+    padding: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.infoContainer button {
+    width: 15%;
+    margin: 4px 2px;
+    height: 10%;
+}

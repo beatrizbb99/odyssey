@@ -73,17 +73,18 @@
     background-repeat: no-repeat;
     width: 100%;
     padding: 0 20px;
-    
+
 }
 
 .inputs {
     width: 70%;
 }
 
-.formGroup .textarea, .input {
+.formGroup .textarea,
+.input {
     background-color: rgba(255, 255, 255, 0.8);
     padding: 8px;
-    border-radius: 5px; 
+    border-radius: 5px;
     border: 1px solid #ccc;
     margin: 10px 0;
     font-size: 12pt;
@@ -160,3 +161,32 @@
     border: 2px solid red;
 }
 
+
+.colorSelectionWrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.colorDisplay {
+    padding: 30px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: inherit;
+    cursor: pointer;
+}
+
+.colorSelection {
+    display: none;
+    font-size: 12pt;
+}
+
+.colorSelectionWrapper:hover .colorSelection {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    padding: 5px;
+}

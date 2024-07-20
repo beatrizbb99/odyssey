@@ -45,7 +45,9 @@ export const fetchStory = async (storyId: string): Promise<Story | null> => {
         description: storyData.description,
         coverUrl: storyData.coverUrl
      ,
-        modelName: storyData.modelName || 'basic_book_test',
+        modelName: storyData.modelName,
+
+        color: storyData.color
       };
     } else {
       console.error("Story does not exist");
@@ -101,6 +103,39 @@ export const addChapterToStory = async (storyId: string, currentChapterCount: nu
   }
 };
 
+export const getAllStories = async (): Promise<Story[]> => {
+  try {
+    const storiesCollectionRef = collection(firestore, 'Stories');
+    const storiesQuery = query(storiesCollectionRef, orderBy('title'));
+    const querySnapshot = await getDocs(storiesQuery);
+
+    const stories: Story[] = querySnapshot.docs.map(doc => {
+      const storyData = doc.data();
+      const story: Story = {
+        id: doc.id,
+        title: storyData.title,
+        description: storyData.description,
+        categories: storyData.categories,
+        chapters: [],
+        modelName: storyData.modelName,
+        coverUrl: storyData.coverUrl,
+        color: storyData.color
+      };
+
+      if (storyData.original) {
+        story.original = storyData.original;
+      }
+
+      return story;
+    });
+
+    return stories;
+  } catch (error) {
+    console.error('Error fetching all stories:', error);
+    return [];
+  }
+};
+
 export const deleteChapter = async (deletedChapterId: string, story: Story) => {
   try {
     const storyDocRef = doc(firestore, 'Stories', story.id, 'Kapitel', deletedChapterId);
@@ -137,8 +172,9 @@ export const saveStory = async (story: Story): Promise<{ success: boolean; id?: 
       title: story.title,
       description: story.description,
       categories: story.categories,
-      modelName: story.modelName || 'basic_book_test', // if nothing:  basic_book,
-      coverUrl: story.coverUrl || ''
+      modelName: story.modelName,
+      coverUrl: story.coverUrl || '',
+      color: story.color
     });
 
     return { success: true, id: storyDocRef.id };
@@ -160,13 +196,15 @@ export const updateStory = async (updatedStory: Story, coverFile: File | null): 
       coverUrl = await handleCoverUpload(updatedStory.id, null);
     }
    
+    console.log(updatedStory);
 
     await updateDoc(storyDocRef, {
       title: updatedStory.title,
       description: updatedStory.description,
       categories: updatedStory.categories,
-      modelName: updatedStory.modelName || 'basic_book_test', //if nothing: basic_book,
-      coverUrl
+      modelName: updatedStory.modelName,
+      coverUrl,
+      color: updatedStory.color
     });
 
     return { success: true };
@@ -204,8 +242,9 @@ export const getStoriesFromCategory = async (categoryId: string): Promise<Story[
         description: storyData.description,
         categories: storyData.categories,
         chapters: [],
-        modelName: storyData.modelName || 'basic_book_test', //if nothing: basic_book,
-        coverUrl: storyData.coverUrl
+        modelName: storyData.modelName,
+        coverUrl: storyData.coverUrl,
+        color: storyData.color
       };
 
       if (storyData.original) {
@@ -258,3 +297,58 @@ export const handleCoverUpload = async (storyId: string, file: File | null): Pro
     throw new Error('Cover upload failed');
   }
 };
+
+export const deleteStory = async (story: Story) => {
+  try {
+    const storyId = story.id;
+
+    if (!storyId) {
+      throw new Error("Invalid storyId");
+    }
+
+    if (story.original) {
+      throw new Error("Original stories cannot be deleted");
+    }
+
+    const storyDocRef = doc(firestore, 'Stories', storyId);
+    const storyDoc = await getDoc(storyDocRef);
+
+    if (!storyDoc.exists()) {
+      console.error("Story does not exist");
+      return { success: false };
+    }
+
+    const storyData = storyDoc.data();
+    if (!storyData) {
+      console.error("No data found in story doc");
+      return { success: false };
+    }
+
+    // Lösche Kapitel-Content
+    const chaptersCollectionRef = collection(storyDocRef, 'Kapitel');
+    const chaptersSnapshot = await getDocs(chaptersCollectionRef);
+
+    const deleteChapterPromises = chaptersSnapshot.docs.map(async (chapterDoc) => {
+      const chapterId = chapterDoc.id;
+      const contentRef = ref(storage, `stories/${storyId}/${chapterId}.txt`);
+      await deleteObject(contentRef);
+    });
+
+    await Promise.all(deleteChapterPromises);
+
+    // Lösche Cover, wenn kein Default-Cover
+    if (storyData.coverUrl && !storyData.coverUrl.includes('defaultCover')) {
+      const coverRef = ref(storage, `covers/${storyId}/cover.jpg`);
+      await deleteObject(coverRef);
+    }
+
+    // Lösche Story
+    await deleteDoc(storyDocRef);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting story:', error);
+    return { success: false };
+  }
+};
+

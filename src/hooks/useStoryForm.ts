@@ -5,7 +5,7 @@ import router from "next/router";
 
 export const useStoryForm = (initialStory: Story | null) => {
     const [title, setTitle] = useState<string>(initialStory?.title || '');
-    const [modelName, setModelName] = useState<string>('basic_book_test');
+    const [modelName, setModelName] = useState<string>(initialStory?.modelName || 'basic_book_test');
     const [categories, setCategories] = useState<string[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>(initialStory?.categories || []);
     const [description, setDescription] = useState<string>(initialStory?.description || '');
@@ -13,6 +13,7 @@ export const useStoryForm = (initialStory: Story | null) => {
     const [coverFile, setCoverFile] = useState<File | null>(null); 
     const [coverUrl, setCoverUrl] = useState<string>(initialStory?.coverUrl || '');
     const [error, setError] = useState<string | null>(null);
+    const [color, setColor] = useState<string>(initialStory?.color || 'brown');
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -72,6 +73,13 @@ export const useStoryForm = (initialStory: Story | null) => {
         }
     };
 
+    const handleColorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setColor(e.target.value);
+        setModelName('book_' + e.target.value);
+        console.log(e.target.value);
+    };
+
+
     const isFormValid = title.trim() !== '' && selectedCategories.length > 0;
 
     const validateForm = () => {
@@ -105,6 +113,8 @@ export const useStoryForm = (initialStory: Story | null) => {
         handleCoverChange,
         handleCancel,
         isFormValid,
-        validateForm
+        validateForm,
+        color,
+        handleColorChange,
     };
 };

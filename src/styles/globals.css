@@ -41,6 +41,32 @@ body {
     cursor: pointer;
 }
 
+.saveButton {
+  background-color: var(--button-color);
+  color: #fff;
+}
+
+.saveButton:hover {
+  background-color: var(--button-color-hovered);
+}
+
+.cancelButton {
+  background-color: #eaeaea;
+  color: black;
+}
+
+.cancelButton:hover {
+  background-color: #d1d0d0;
+}
+
+.error {
+  color: red;
+}
+
+.inputError {
+  border: 2px solid red;
+}
+
 button {
   background-color: #fd97ca;
   color: white;

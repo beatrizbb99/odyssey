@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import StoryForm from "@/components/StoryForm";
 import { Story } from "@/types/types";
 import { useStoryForm } from "@/hooks/useStoryForm";
-import { toast } from "react-toastify";
 
 const CreateStory: React.FC = () => {
     const {
@@ -23,7 +22,9 @@ const CreateStory: React.FC = () => {
         handleCoverChange,
         handleCancel,
         validateForm,
-        error
+        error,
+        handleColorChange,
+        color
     } = useStoryForm(null);
     
     const router = useRouter();
@@ -36,7 +37,8 @@ const CreateStory: React.FC = () => {
             categories: selectedCategories,
             description,
             id: "",
-            coverUrl
+            coverUrl,
+            color
         };
 
         try {
@@ -46,7 +48,6 @@ const CreateStory: React.FC = () => {
                     await uploadCoverImage(response.id, coverFile);
                 }
                 await addChapterToStory(response.id, 0);
-                toast.success('Story created successfully!', { autoClose: 1000 });
                 router.push(`/edit/${response.id}`);
             } else {
                 throw new Error('Failed to save story');
@@ -60,23 +61,24 @@ const CreateStory: React.FC = () => {
         <>
         <h1 style={{backgroundColor: 'white', padding: '40px', margin: '0' }}>Erstelle eine neue Geschichte</h1>
         <StoryForm
-            title={title}
-            description={description}
-            categories={categories}
-            selectedCategories={selectedCategories}
-            loadingCategories={loadingCategories}
-            onTitleChange={handleTitleChange}
-            modelName={modelName}
-            onDescriptionChange={handleDescriptionChange}
-            onCategoryChange={handleCategoryChange}
-            isFormValid={isFormValid}
-            onSave={handleSaveStory}
-            coverUrl={coverUrl}
-            onCoverChange={handleCoverChange}
-            onCancel={handleCancel}
-            onValidateForm={validateForm}
-            error={error}
-            />
+                title={title}
+                description={description}
+                categories={categories}
+                selectedCategories={selectedCategories}
+                loadingCategories={loadingCategories}
+                onTitleChange={handleTitleChange}
+                modelName={modelName}
+                onDescriptionChange={handleDescriptionChange}
+                onCategoryChange={handleCategoryChange}
+                isFormValid={isFormValid}
+                onSave={handleSaveStory}
+                coverUrl={coverUrl}
+                onCoverChange={handleCoverChange}
+                onCancel={handleCancel}
+                onValidateForm={validateForm}
+                error={error} 
+                color={color} 
+                onColorChange={handleColorChange}            />
         </>
     );
 };

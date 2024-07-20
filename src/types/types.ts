@@ -14,4 +14,5 @@ export interface Story {
     original?: boolean;
     coverUrl: string;
     modelName: string;
+    color: string;
 }

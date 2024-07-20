@@ -8,6 +8,8 @@ import styles from '@/styles/editStory.module.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from '@/components/Loading';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSmileWink } from '@fortawesome/free-solid-svg-icons';
 
 const EditableStory: React.FC = () => {
     const router = useRouter();
@@ -33,10 +35,6 @@ const EditableStory: React.FC = () => {
         loadStory();
     }, [storyId]);
 
-    useEffect(() => {
-        console.log('Current story in EditableStory:', story);
-    }, [story]);
-
     const switchToEditStoryMode = () => {
         setMode('editStory');
     };
@@ -47,7 +45,10 @@ const EditableStory: React.FC = () => {
 
     const handleUpdateStory = (updatedStory: Story, message: string) => {
         setStory(updatedStory);
-        toast.success(message, { autoClose: 1000 });
+        toast(message, { 
+            autoClose: 1000,
+            icon: <FontAwesomeIcon icon={faSmileWink} style={{ color: "#ff00dd" }} />, 
+        });
     };
 
     if (!story) {

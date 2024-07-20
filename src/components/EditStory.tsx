@@ -1,9 +1,13 @@
 import React from "react";
 import { useStoryForm } from '@/hooks/useStoryForm';
-import { updateStory } from '@/services/story.database.handler';
+import { deleteStory, updateStory } from '@/services/story.database.handler';
 import { useRouter } from 'next/router';
 import StoryForm from '@/components/StoryForm';
 import { Story } from "@/types/types";
+import { toast } from "react-toastify";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import style from '@/styles/editStory.module.css';
 
 interface EditStoryProps {
     story: Story;
@@ -27,7 +31,9 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
         handleCoverChange,
         handleCancel,
         validateForm,
-        error
+        error,
+        color,
+        handleColorChange
     } = useStoryForm(story);
 
     const router = useRouter();
@@ -38,6 +44,8 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
             title,
             categories: selectedCategories,
             description,
+            color,
+            modelName,
             coverUrl: coverFile ? URL.createObjectURL(coverFile) : story.coverUrl
         };
 
@@ -50,10 +58,32 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
         }
     };
 
+    const handleDeleteStory = async () => {
+        if (!story) return;
+
+        const confirmation = window.confirm('Bist du sicher, dass du diese Geschichte löschen möchtest?');
+        if (!confirmation) return;
+
+        const response = await deleteStory(story);
+
+        if (response.success) {
+            toast('Geschichte wurde gelöscht', {
+                autoClose: 3000,
+                icon: <FontAwesomeIcon icon={faTrashCan} style={{ color: "#e70dca" }} />,
+            });
+            router.push("/");
+        } else {
+            toast.error('Geschichte wurde nicht gelöscht');
+        }
+    };
+
     return (
         <>
-        <h1 style={{backgroundColor: 'white', padding: '40px', margin: '0' }}>Details der Geschichte bearbeiten</h1>
-        <StoryForm
+            <div className={style.infoContainer}>
+                <h1>Details der Geschichte bearbeiten</h1>
+                <button className='cancelButton' onClick={handleDeleteStory}>Löschen</button>
+            </div>
+            <StoryForm
                 title={title}
                 description={description}
                 categories={categories}
@@ -68,9 +98,11 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
                 onCoverChange={handleCoverChange}
                 onCancel={handleCancel}
                 onValidateForm={validateForm}
-                error={error} 
+                error={error}
                 modelName={modelName}
-        />
+                color={color} 
+                onColorChange={handleColorChange}
+            />
         </>
     );
 };
