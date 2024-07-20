@@ -9,7 +9,7 @@ import Loading from './Loading';
 
 interface EditChaptersProps {
     story: Story;
-    onUpdateStory: (updatedStory: Story) => void;
+    onUpdateStory: (updatedStory: Story, message: string) => void;
 }
 
 const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => {
@@ -37,7 +37,7 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
     };
 
     const handleSave = async () => {
-        if (!story) return;
+        if (!story || selectedChapterIndex < 0 || selectedChapterIndex >= story.chapters.length) return;
 
         const updatedChapter = {
             ...story.chapters[selectedChapterIndex],
@@ -56,9 +56,10 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
                     chapters: updatedChapters,
                 };
 
-                onUpdateStory(updatedStory);
-
                 await saveContentToStorage(story.id, updatedChapter.id, editableContent);
+
+                onUpdateStory(updatedStory, 'Kapitel gespeichert.');
+                return updatedStory;
             } else {
                 alert('Failed to update chapter.');
             }
@@ -68,20 +69,36 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
         }
     };
 
+    const checkForUnsavedChanges = () => {
+        const selectedChapter = story.chapters[selectedChapterIndex];
+        return (
+            editableTitle !== selectedChapter.title ||
+            editableContent !== selectedChapter.content
+        );
+    };
+
     const handleAddChapter = async () => {
         if (!story) return;
+
+        let savedStory;
+        if (checkForUnsavedChanges()) {
+            savedStory = await handleSave();
+        } else {
+            savedStory = story;
+        }
 
         try {
             const currentChapterCount = story.chapters.length;
             const addedChapter = await addChapterToStory(story.id, currentChapterCount);
 
-            if (addedChapter) {
-                const updatedChapters = [...story.chapters, addedChapter];
+            if (addedChapter && savedStory) {
+                const updatedChapters = [...savedStory.chapters, addedChapter];
                 const updatedStory = {
-                    ...story,
+                    ...savedStory,
                     chapters: updatedChapters,
                 };
-                onUpdateStory(updatedStory);
+
+                onUpdateStory(updatedStory, 'Kapitel hinzugefügt.');
                 setSelectedChapterIndex(updatedChapters.length - 1);
             } else {
                 alert('Failed to add chapter.');
@@ -95,27 +112,33 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
     const handleDeleteChapter = async (chapterId: string) => {
         if (!story) return;
 
+        if (story.chapters.length === 1) {
+            alert('Cannot delete the only chapter.');
+            return;
+        }
+    
         try {
-            const response = await deleteChapter(chapterId, story.id);
-            if (response.success) {
-                const updatedChapters: Chapter[] = response.updatedChapters || [];
-
-                const updatedStory = {
-                    ...story,
-                    chapters: updatedChapters,
-                };
-
-                onUpdateStory(updatedStory);
-
-                setSelectedChapterIndex(prevIndex => Math.max(prevIndex - 1, 0));
+            const response = await deleteChapter(chapterId, story);
+            
+            if (response.success && response.story) {
+                const updatedStory: Story = response.story;
+    
+                const chapterIndex = story.chapters.findIndex(chapter => chapter.id === chapterId);
+    
+                const newSelectedIndex = selectedChapterIndex >= chapterIndex
+                    ? Math.max(selectedChapterIndex - 1, 0)
+                    : selectedChapterIndex;
+    
+                onUpdateStory(updatedStory, 'Kapitel gelöscht.');
+                setSelectedChapterIndex(newSelectedIndex);
             } else {
-                alert('Failed to delete chapter.');
+                alert('Failed to delete chapter or update story.');
             }
         } catch (error) {
             console.error('Error deleting chapter:', error);
             alert('Failed to delete chapter. Please try again.');
         }
-    };
+    };        
 
     const togglePanel = () => {
         setIsPanelCollapsed(!isPanelCollapsed);
@@ -138,12 +161,12 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
                     <FontAwesomeIcon icon={isPanelCollapsed ? faChevronRight : faChevronLeft} />
                 </div>
                 {!isPanelCollapsed && (
-                    <KapitelPanel 
-                        chapters={story.chapters} 
-                        onSelect={setSelectedChapterIndex} 
+                    <KapitelPanel
+                        chapters={story.chapters}
+                        onSelect={setSelectedChapterIndex}
                         selectedIndex={selectedChapterIndex}
-                        onAddChapter={handleAddChapter} 
-                        onDeleteChapter={handleDeleteChapter} 
+                        onAddChapter={handleAddChapter}
+                        onDeleteChapter={handleDeleteChapter}
                     />
                 )}
             </div>

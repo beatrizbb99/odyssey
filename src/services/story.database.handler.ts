@@ -24,6 +24,7 @@ export const fetchStory = async (storyId: string): Promise<Story | null> => {
       const chaptersSnapshot = await getDocs(chaptersQuery);
       const chapters = chaptersSnapshot.docs.map(chap => chap.data() as Chapter);
 
+      //Hole content von Storage
       for (let chapter of chapters) {
         const contentUrl = await getDownloadURL(ref(storage, `stories/${storyId}/${chapter.id}.txt`));
         const response = await fetch(contentUrl);
@@ -44,7 +45,7 @@ export const fetchStory = async (storyId: string): Promise<Story | null> => {
         description: storyData.description,
         coverUrl: storyData.coverUrl
      ,
-        modelName: storyData.modelName || 'basic_book_test', // Neues Attribut mit Standardwert
+        modelName: storyData.modelName || 'basic_book_test',
       };
     } else {
       console.error("Story does not exist");
@@ -100,43 +101,29 @@ export const addChapterToStory = async (storyId: string, currentChapterCount: nu
   }
 };
 
-export const deleteChapter = async (deletedChapterId: string, storyId: string) => {
+export const deleteChapter = async (deletedChapterId: string, story: Story) => {
   try {
-    const storyDocRef = doc(firestore, 'Stories', storyId, 'Kapitel', deletedChapterId);
+    const storyDocRef = doc(firestore, 'Stories', story.id, 'Kapitel', deletedChapterId);
     await deleteDoc(storyDocRef);
 
-    // Delete content from Firebase Storage
-    const contentRef = ref(storage, `stories/${storyId}/${deletedChapterId}.txt`);
+    const contentRef = ref(storage, `stories/${story.id}/${deletedChapterId}.txt`);
     await deleteObject(contentRef);
 
-    const chaptersCollectionRef = collection(firestore, 'Stories', storyId, 'Kapitel');
-    const q = query(chaptersCollectionRef, orderBy('chapterNumber'));
-    const querySnapshot = await getDocs(q);
-
-    const updatedChapters: Chapter[] = [];
-    querySnapshot.forEach((doc) => {
-      const chapterData = doc.data() as Chapter;
-      if (chapterData.id !== deletedChapterId) {
-        updatedChapters.push({
-          ...chapterData,
-          id: doc.id
-        });
-      }
-    });
+    const updatedChapters = story.chapters.filter(chapter => chapter.id !== deletedChapterId);
 
     for (let i = 0; i < updatedChapters.length; i++) {
       const chapter = updatedChapters[i];
       if (chapter.chapterNumber !== i + 1) {
-        const chapterDocRef = doc(firestore, 'Stories', storyId, 'Kapitel', chapter.id);
+        const chapterDocRef = doc(firestore, 'Stories', story.id, 'Kapitel', chapter.id);
         await updateDoc(chapterDocRef, { chapterNumber: i + 1 });
-        updatedChapters[i].chapterNumber = i + 1;
+        chapter.chapterNumber = i + 1;
       }
     }
 
-    return { success: true, updatedChapters };
+    return { success: true, story: { ...story, chapters: updatedChapters } };
   } catch (error) {
     console.error('Error deleting chapter:', error);
-    return { success: false, updatedChapters: [] };
+    return { success: false };
   }
 };
 

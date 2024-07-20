@@ -7,7 +7,7 @@ import { Story } from "@/types/types";
 
 interface EditStoryProps {
     story: Story;
-    onUpdateStory: (updatedStory: Story) => void;
+    onUpdateStory: (updatedStory: Story, message: string) => void;
 }
 
 const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
@@ -43,7 +43,7 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
 
         const response = await updateStory(updatedStory, coverFile);
         if (response.success) {
-            onUpdateStory(updatedStory);
+            onUpdateStory(updatedStory, 'Details gespeichert.');
             router.push(`/edit/${story.id}`);
         } else {
             alert('Error saving the story. Please try again.');
@@ -52,7 +52,7 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
 
     return (
         <>
-        <h1 style={{backgroundColor: 'white', padding: '40px', margin: '0' }}>Geschichte bearbeiten</h1>
+        <h1 style={{backgroundColor: 'white', padding: '40px', margin: '0' }}>Details der Geschichte bearbeiten</h1>
         <StoryForm
                 title={title}
                 description={description}

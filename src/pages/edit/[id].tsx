@@ -33,6 +33,10 @@ const EditableStory: React.FC = () => {
         loadStory();
     }, [storyId]);
 
+    useEffect(() => {
+        console.log('Current story in EditableStory:', story);
+    }, [story]);
+
     const switchToEditStoryMode = () => {
         setMode('editStory');
     };
@@ -41,9 +45,9 @@ const EditableStory: React.FC = () => {
         setMode('editChapters');
     };
 
-    const handleUpdateStory = (updatedStory: Story) => {
+    const handleUpdateStory = (updatedStory: Story, message: string) => {
         setStory(updatedStory);
-        toast.success('Story updated successfully!', { autoClose: 1000 });
+        toast.success(message, { autoClose: 1000 });
     };
 
     if (!story) {
