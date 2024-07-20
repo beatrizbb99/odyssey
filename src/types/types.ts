@@ -12,6 +12,7 @@ export interface Story {
     categories: string[];
     description: string;
     original?: boolean;
+    coverUrl: string;
 }
 
 export interface Book {

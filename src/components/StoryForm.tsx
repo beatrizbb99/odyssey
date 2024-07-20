@@ -1,4 +1,6 @@
 import React from "react";
+import styles from '@/styles/storyForm.module.css';
+import Loading from "./Loading";
 
 interface StoryFormProps {
     title: string;
@@ -10,7 +12,12 @@ interface StoryFormProps {
     onDescriptionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     onCategoryChange: (category: string) => void;
     isFormValid: boolean;
+    onValidateForm: () => boolean;
     onSave: () => void;
+    coverUrl: string;
+    onCoverChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    error?: string | null;
+    onCancel: () => void;
 }
 
 const StoryForm: React.FC<StoryFormProps> = ({
@@ -23,49 +30,111 @@ const StoryForm: React.FC<StoryFormProps> = ({
     onDescriptionChange,
     onCategoryChange,
     isFormValid,
+    onValidateForm,
     onSave,
-}) => (
-    <div>
-        <div>
-            {isFormValid ? (
-                <button onClick={onSave}>Speichern</button>
-            ) : (
-                <button disabled>Speichern</button>
-            )}
-        </div>
-        <div>
-            <p>Titel</p>
-            <input type="text" value={title} onChange={onTitleChange} />
-            <p>Beschreibung</p>
-            <textarea value={description} onChange={onDescriptionChange}></textarea>
-            {selectedCategories.length > 0 && (
-                <ul>
-                    {selectedCategories.map((cat, index) => (
-                        <li key={index}>{cat}</li>
-                    ))}
-                </ul>
-            )}
-            <p>Kategorien auswählen:</p>
-            <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #ccc', padding: '5px', backgroundColor: 'white' }}>
-                {loadingCategories ? (
-                    <p>Lade Kategorien...</p>
-                ) : (
-                    categories.map((cat) => (
-                        <div key={cat}>
+    coverUrl,
+    onCoverChange,
+    error,
+    onCancel
+}) => {
+    const maxDescriptionLength = 2000;
+
+    return (
+        <div className={styles.container}>
+            <div className={styles.contentContainer}>
+                <div className={styles.coverContainer}>
+                    <div className={styles.coverWrapper}>
+                        {coverUrl ? (
+                            <img src={coverUrl} alt="Cover Preview" className={styles.coverImage} />
+                        ) : (
+                            <div className={styles.defaultCover}>No Cover</div>
+                        )}
+                    </div>
+                    <input
+                        type="file"
+                        id="cover"
+                        accept="image/*"
+                        onChange={onCoverChange}
+                        className={styles.fileInput}
+                    />
+                </div>
+                <div className={styles.inputContainer}>
+                    <div className={styles.inputs}>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="title">Titel:</label>
                             <input
-                                type="checkbox"
-                                id={cat}
-                                value={cat}
-                                checked={selectedCategories.includes(cat)}
-                                onChange={() => onCategoryChange(cat)}
+                                type="text"
+                                id="title"
+                                value={title}
+                                onChange={onTitleChange}
+                                className={`${styles.input} ${error && !title ? styles.inputError : ''}`}
                             />
-                            <label htmlFor={cat}>{cat}</label>
+                            <label htmlFor="description">Beschreibung:</label>
+                            <textarea
+                                id="description"
+                                value={description}
+                                onChange={onDescriptionChange}
+                                className={styles.textarea}
+                                maxLength={maxDescriptionLength}
+                            ></textarea>
+                            <p className={styles.charCount}>
+                                {description.length}/{maxDescriptionLength} characters
+                            </p>
                         </div>
-                    ))
-                )}
+                        <div className={styles.categoryGroup}>
+                            <div className={styles.categoryContainer}>
+                                <div className={styles.category}>
+                                    {selectedCategories.map((category, index) => (
+                                        <div key={index} className={styles.categoryItem}>
+                                            {category}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <p>Kategorien:</p>
+                            <div className={`${styles.categoryList} ${error && selectedCategories.length === 0 ? styles.inputError : ''}`}>
+                                {loadingCategories ? (
+                                    <Loading />
+                                ) : (
+                                    categories.map((cat) => (
+                                        <div key={cat}>
+                                            <input
+                                                type="checkbox"
+                                                id={cat}
+                                                value={cat}
+                                                checked={selectedCategories.includes(cat)}
+                                                onChange={() => onCategoryChange(cat)}
+                                            />
+                                            <label htmlFor={cat}>{cat}</label>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                        {error && <p className={styles.error}>{error}</p>}
+                        <div className={styles.buttons}>
+                            <button
+                                onClick={() => {
+                                    if (onValidateForm()) {
+                                        onSave();
+                                    }
+                                }}
+                                className={styles.saveButton}
+                            >
+                                Save Story
+                            </button>
+                            <button
+                                onClick={onCancel}
+                                className={styles.cancelButton}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 export default StoryForm;

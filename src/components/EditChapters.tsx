@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Story, Chapter } from '@/types/types';
-import StoryText from '@/components/StoryText';
-import { fetchStory, updateChapter, addChapterToStory, deleteChapter, saveContentToStorage } from '@/services/story.database.handler';
+import { updateChapter, addChapterToStory, deleteChapter, saveContentToStorage } from '@/services/story.database.handler';
 import KapitelPanel from '@/components/KapitelPanel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import styles from '@/styles/editChapter.module.css';
+import Loading from './Loading';
 
 interface EditChaptersProps {
-    story: Story; // Die gesamte Story als Prop übergeben
-    onUpdateStory: (updatedStory: Story) => void; // Funktion zum Aktualisieren der Story im Elternkomponenten
+    story: Story;
+    onUpdateStory: (updatedStory: Story) => void;
 }
 
 const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => {
@@ -14,6 +17,7 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
     const [loading, setLoading] = useState(true);
     const [editableTitle, setEditableTitle] = useState<string>('');
     const [editableContent, setEditableContent] = useState<string>('');
+    const [isPanelCollapsed, setIsPanelCollapsed] = useState<boolean>(false);
 
     useEffect(() => {
         if (story && story.chapters.length > 0) {
@@ -28,8 +32,8 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
         setEditableTitle(e.target.value);
     };
 
-    const handleContentChange = (newContent: string) => {
-        setEditableContent(newContent);
+    const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setEditableContent(e.target.value);
     };
 
     const handleSave = async () => {
@@ -52,7 +56,7 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
                     chapters: updatedChapters,
                 };
 
-                onUpdateStory(updatedStory); // Aktualisierte Story an Elternkomponente zurückgeben
+                onUpdateStory(updatedStory);
 
                 await saveContentToStorage(story.id, updatedChapter.id, editableContent);
             } else {
@@ -77,7 +81,7 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
                     ...story,
                     chapters: updatedChapters,
                 };
-                onUpdateStory(updatedStory); // Aktualisierte Story an Elternkomponente zurückgeben
+                onUpdateStory(updatedStory);
                 setSelectedChapterIndex(updatedChapters.length - 1);
             } else {
                 alert('Failed to add chapter.');
@@ -101,7 +105,7 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
                     chapters: updatedChapters,
                 };
 
-                onUpdateStory(updatedStory); // Aktualisierte Story an Elternkomponente zurückgeben
+                onUpdateStory(updatedStory);
 
                 setSelectedChapterIndex(prevIndex => Math.max(prevIndex - 1, 0));
             } else {
@@ -113,8 +117,12 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
         }
     };
 
+    const togglePanel = () => {
+        setIsPanelCollapsed(!isPanelCollapsed);
+    };
+
     if (loading) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     if (!story) {
@@ -124,20 +132,34 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
     const selectedChapter = story.chapters[selectedChapterIndex];
 
     return (
-        <div style={{ marginLeft: '20px', padding: '10px', flexGrow: 1, display: 'flex' }}>
-            {story.chapters.length > 0 && (
-                <KapitelPanel chapters={story.chapters} onSelect={setSelectedChapterIndex} onAddChapter={handleAddChapter} onDeleteChapter={handleDeleteChapter} />
-            )}
-            <div>
+        <div className={styles.container}>
+            <div className={`${styles.panelContainer} ${isPanelCollapsed ? styles.collapsed : ''}`}>
+                <div className={styles.toggleButton} onClick={togglePanel}>
+                    <FontAwesomeIcon icon={isPanelCollapsed ? faChevronRight : faChevronLeft} />
+                </div>
+                {!isPanelCollapsed && (
+                    <KapitelPanel 
+                        chapters={story.chapters} 
+                        onSelect={setSelectedChapterIndex} 
+                        selectedIndex={selectedChapterIndex}
+                        onAddChapter={handleAddChapter} 
+                        onDeleteChapter={handleDeleteChapter} 
+                    />
+                )}
+            </div>
+            <div className={styles.chapterEditor}>
                 <h2>{story.title}</h2>
                 <input
                     type="text"
                     value={editableTitle}
                     onChange={handleTitleChange}
-                    style={{ fontSize: '16px', width: '100%', marginBottom: '10px' }}
                 />
-                <StoryText initialText={editableContent} onTextChange={handleContentChange} />
-                <button onClick={handleSave}>Save Chapter</button>
+                <textarea
+                    value={editableContent}
+                    onChange={handleContentChange}
+                    className={styles.text}
+                />
+                <button className={styles.saveButton} onClick={handleSave}>Save Chapter</button>
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import { Story } from '@/types/types';
+import styles from '@/styles/book.module.css';
 
 interface StoryListProps {
     story: Story;
@@ -17,16 +18,31 @@ const Book: React.FC<StoryListProps> = ({ story }) => {
         router.push(`/story/${storyId}`);
     };
 
+    const handleCategory = (category: string) => {
+        router.push(`/category/${category}`);
+    }
+
     return (
-        <div>
-            <div key={story.id} style={{ border: '1px solid black', margin: '10px', padding: '10px' }}>
-                <h2>{story.title}</h2>
-                <p>{story.description}</p>
-                <div>
-                    <strong>Categories:</strong> {story.categories.join(', ')}
+        <div className={styles.bookContainer}>
+            <div key={story.id} className={styles.book}>
+                <img src={story.coverUrl} alt={`${story.title} cover`} className={styles.coverImage} />
+                <div className={styles.bookDetails}>
+                    <h2>{story.title}</h2>
+                    <p className={styles.bookDescription}>{story.description}</p>
+                    <div className={styles.categoryContainer}>
+                        <div className={styles.category}>
+                            {story.categories.map((category, index) => (
+                                <div key={index} className={styles.categoryItem} onClick={() => handleCategory(category)}>
+                                    {category}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className={styles.bookButtons}>
+                        <button onClick={() => handleRead(story.id)}>Read</button>
+                        {!story.original && <button onClick={() => handleEdit(story.id)}>Edit</button>}
+                    </div>
                 </div>
-                { !story.original && <button onClick={() => handleEdit(story.id)}>Edit</button> }
-                <button onClick={() => handleRead(story.id)}>Read</button>
             </div>
         </div>
     );

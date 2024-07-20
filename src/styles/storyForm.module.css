@@ -1,0 +1,162 @@
+.container {
+    padding: 20px 0 0 40px;
+    background-color: white;
+    min-height: 100vh;
+}
+
+.contentContainer {
+    display: flex;
+    gap: 80px;
+    padding: 30px 0;
+}
+
+.error {
+    color: red;
+}
+
+.charCount {
+    font-size: 12px;
+    color: #888;
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+}
+
+.input,
+.textarea,
+.fileInput {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.textarea {
+    height: 250px;
+}
+
+.coverWrapper {
+    width: 200px;
+    min-height: 320px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.coverImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.defaultCover {
+    background-color: #eaeaea;
+    color: #888;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+.inputContainer {
+    background-image: url("../../public/Book.png");
+    background-size: 85%;
+    background-repeat: no-repeat;
+    width: 100%;
+    padding: 0 20px;
+    
+}
+
+.inputs {
+    width: 70%;
+}
+
+.formGroup .textarea, .input {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 8px;
+    border-radius: 5px; 
+    border: 1px solid #ccc;
+    margin: 10px 0;
+    font-size: 12pt;
+}
+
+.categoryGroup {
+    margin-bottom: 20px;
+}
+
+.categoryList {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.category {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.categoryContainer {
+    max-height: 100px;
+    overflow: auto;
+    margin: 30px 0;
+}
+
+.categoryItem {
+    background-color: #eaeaea;
+    font-size: 10pt;
+    padding: 5px 10px;
+    margin: 5px 5px 0 0;
+    border-radius: 5px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.saveButton,
+.cancelButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.saveButton {
+    background-color: var(--button-color);
+    color: #fff;
+}
+
+.saveButton:hover {
+    background-color: var(--button-color-hovered);
+}
+
+.cancelButton {
+    background-color: #eaeaea;
+    color: black;
+}
+
+.cancelButton:hover {
+    background-color: #d1d0d0;
+}
+
+.error {
+    color: red;
+}
+
+.inputError {
+    border: 2px solid red;
+}
+

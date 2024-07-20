@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import GLTFMeshGL from './GLTFMeshGL';
 import { loadModel } from '@/helpers/loadModel';
-import { getAllCategories } from '@/services/category.database.handler'; // Import your fetch function
+import { getAllCategories } from '@/services/category.database.handler';
 
 const Scene: React.FC = () => {
   const [modelUrl, setModelUrl] = useState<string | null>(null);
@@ -21,7 +21,7 @@ const Scene: React.FC = () => {
 
   useEffect(() => {
     const fetchModelUrl = async () => {
-      const url = await loadModel('models/shelf_test.glb');
+      const url = await loadModel('models/shelf.glb');
       setModelUrl(url);
     };
 

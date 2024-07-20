@@ -24,7 +24,6 @@ export const fetchStory = async (storyId: string): Promise<Story | null> => {
       const chaptersSnapshot = await getDocs(chaptersQuery);
       const chapters = chaptersSnapshot.docs.map(chap => chap.data() as Chapter);
 
-      // Fetch content from Firebase Storage
       for (let chapter of chapters) {
         const contentUrl = await getDownloadURL(ref(storage, `stories/${storyId}/${chapter.id}.txt`));
         const response = await fetch(contentUrl);
@@ -32,7 +31,14 @@ export const fetchStory = async (storyId: string): Promise<Story | null> => {
         chapter.content = text;
       }
 
-      return { id: storyDoc.id, title: storyData.title || '', chapters, categories: storyData.categories, description: storyData.description };
+      return {
+        id: storyDoc.id,
+        title: storyData.title || '',
+        chapters,
+        categories: storyData.categories,
+        description: storyData.description,
+        coverUrl: storyData.coverUrl
+      };
     } else {
       console.error("Story does not exist");
       return null;
@@ -45,13 +51,11 @@ export const fetchStory = async (storyId: string): Promise<Story | null> => {
 
 export const updateChapter = async (updatedChapter: Chapter, storyId: string): Promise<{ success: boolean }> => {
   try {
-    // Update title in Firestore
     const chapterDocRef = doc(firestore, 'Stories', storyId, 'Kapitel', updatedChapter.id);
     await updateDoc(chapterDocRef, {
       title: updatedChapter.title,
     });
 
-    // Save content to Firebase Storage
     await saveContentToStorage(storyId, updatedChapter.id, updatedChapter.content);
 
     return { success: true };
@@ -72,7 +76,7 @@ export const addChapterToStory = async (storyId: string, currentChapterCount: nu
 
     const newChapter: Chapter = {
       id: docRef.id,
-      title: '',
+      title: 'Neues Kapitel',
       content: '',
       chapterNumber: currentChapterCount + 1
     };
@@ -138,7 +142,8 @@ export const saveStory = async (story: Story): Promise<{ success: boolean; id?: 
       id: storyDocRef.id,
       title: story.title,
       description: story.description,
-      categories: story.categories
+      categories: story.categories,
+      coverUrl: story.coverUrl || ''
     });
 
     return { success: true, id: storyDocRef.id };
@@ -148,13 +153,24 @@ export const saveStory = async (story: Story): Promise<{ success: boolean; id?: 
   }
 };
 
-export const updateStory = async (updatedStory: Story): Promise<{ success: boolean }> => {
+
+export const updateStory = async (updatedStory: Story, coverFile: File | null): Promise<{ success: boolean }> => {
   try {
     const storyDocRef = doc(firestore, 'Stories', updatedStory.id);
+
+    let coverUrl = updatedStory.coverUrl;
+    if (coverFile) {
+      coverUrl = await handleCoverUpload(updatedStory.id, coverFile);
+    } else if (!updatedStory.coverUrl) {
+      coverUrl = await handleCoverUpload(updatedStory.id, null);
+    }
+   
+
     await updateDoc(storyDocRef, {
       title: updatedStory.title,
       description: updatedStory.description,
-      categories: updatedStory.categories
+      categories: updatedStory.categories,
+      coverUrl
     });
 
     return { success: true };
@@ -179,7 +195,7 @@ export const getStoriesFromCategory = async (categoryId: string): Promise<Story[
     if (!categoryId) {
       throw new Error('Invalid categoryId');
     }
-    
+
     const storiesCollectionRef = collection(firestore, 'Stories');
     const storiesQuery = query(storiesCollectionRef, where('categories', 'array-contains', categoryId));
     const querySnapshot = await getDocs(storiesQuery);
@@ -191,7 +207,8 @@ export const getStoriesFromCategory = async (categoryId: string): Promise<Story[
         title: storyData.title,
         description: storyData.description,
         categories: storyData.categories,
-        chapters: []
+        chapters: [],
+        coverUrl: storyData.coverUrl
       };
 
       if (storyData.original) {
@@ -205,5 +222,42 @@ export const getStoriesFromCategory = async (categoryId: string): Promise<Story[
   } catch (error) {
     console.error('Error fetching stories from category:', error);
     return [];
+  }
+};
+
+export const uploadCoverImage = async (storyId: string, file: File | null): Promise<{ success: boolean; coverUrl?: string }> => {
+  try {
+    const coverUrl = await handleCoverUpload(storyId, file);
+    return { success: true, coverUrl };
+  } catch (error) {
+    console.error('Error uploading cover image:', error);
+    return { success: false };
+  }
+};
+
+export const handleCoverUpload = async (storyId: string, file: File | null): Promise<string> => {
+  try {
+    if (!file) {
+      const defaultCovers = [
+        'covers/defaultCover1.jpg',
+        'covers/defaultCover2.jpg',
+        'covers/defaultCover3.jpg',
+        'covers/defaultCover4.jpg',
+        'covers/defaultCover5.jpg'
+      ];
+
+      const randomCoverPath = defaultCovers[Math.floor(Math.random() * defaultCovers.length)];
+
+      const defaultCoverRef = ref(storage, randomCoverPath);
+      return await getDownloadURL(defaultCoverRef);
+    }
+
+    const coverRef = ref(storage, `covers/${storyId}/cover.jpg`);
+    await uploadBytes(coverRef, file);
+
+    return await getDownloadURL(coverRef);
+  } catch (error) {
+    console.error('Error handling cover upload:', error);
+    throw new Error('Cover upload failed');
   }
 };

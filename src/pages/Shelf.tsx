@@ -1,6 +1,7 @@
 import React from 'react';
 import {useRouter} from 'next/router';
 import Scene from '@/components/Scene';
+import styles from '@/styles/shelf.module.css'
 
 const Shelf: React.FC = () => {
     const router = useRouter();
@@ -11,9 +12,9 @@ const Shelf: React.FC = () => {
 
 
   return (
-    <div>
+    <div className={styles.shelfContainer}>
       <h1>Welcome to the Shelf Page</h1>
-      <Scene />
+      <Scene /> 
       <button onClick={returns} >Go back to the start!</button>
     </div>
   );

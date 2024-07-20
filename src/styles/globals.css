@@ -4,6 +4,9 @@
 :root {
   --headline-color: white;
   --background-color: white;
+  --primary-color: rgb(253, 196, 220);
+  --button-color: #890049;
+  --button-color-hovered: #6a0039;
   --text-color: black;
 }
 
@@ -27,4 +30,12 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+.saveButton,
+.cancelButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }

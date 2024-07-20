@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { Story } from '@/types/types';
 import KapitelPanel from '@/components/KapitelPanel';
 import { fetchStory } from '@/services/story.database.handler';
+import Loading from '@/components/Loading';
 
 const StoryView: React.FC = () => {
   const router = useRouter();
@@ -30,7 +31,7 @@ const StoryView: React.FC = () => {
   }, [storyId]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (!story) {
@@ -44,8 +45,8 @@ const StoryView: React.FC = () => {
       {story.chapters.length >= 2 && (
         <KapitelPanel
           chapters={story.chapters}
-          onSelect={setSelectedChapterIndex}
-        />
+          onSelect={setSelectedChapterIndex} 
+          selectedIndex={selectedChapterIndex}/>
       )}
       <div style={{ marginLeft: '20px', padding: '10px' }}>
         <h2>{story.title}</h2>

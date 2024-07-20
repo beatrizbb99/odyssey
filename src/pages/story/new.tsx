@@ -1,115 +1,81 @@
-import React, { useState, useEffect } from "react";
-import { getAllCategories } from '@/services/category.database.handler';
-import { addChapterToStory, saveStory } from '@/services/story.database.handler';
+import React from "react";
+import { addChapterToStory, saveStory, uploadCoverImage } from '@/services/story.database.handler';
 import { useRouter } from 'next/router';
+import StoryForm from "@/components/StoryForm";
 import { Story } from "@/types/types";
+import { useStoryForm } from "@/hooks/useStoryForm";
+import { toast } from "react-toastify";
 
 const CreateStory: React.FC = () => {
-    const [title, setTitle] = useState<string>('');
-    const [categories, setCategories] = useState<string[]>([]);
-    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-    const [description, setDescription] = useState<string>('');
-    const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
+    const {
+        title,
+        categories,
+        selectedCategories,
+        description,
+        loadingCategories,
+        handleTitleChange,
+        handleDescriptionChange,
+        handleCategoryChange,
+        isFormValid,
+        coverFile,
+        coverUrl,
+        handleCoverChange,
+        handleCancel,
+        validateForm,
+        error
+    } = useStoryForm(null);
+    
     const router = useRouter();
-
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const fetchedCategories = await getAllCategories();
-                setCategories(fetchedCategories ?? []); // Verwende einen leeren Array, falls fetchedCategories null ist
-            } catch (error) {
-                console.error('Failed to fetch categories:', error);
-                setCategories([]); // Setze einen leeren Array bei einem Fehler
-            } finally {
-                setLoadingCategories(false);
-            }
-        };
-
-        fetchCategories();
-    }, []);
-
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTitle(e.target.value);
-    };
-
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setDescription(e.target.value);
-    };
-
-    const handleCategoryChange = (category: string) => {
-        const isChecked = selectedCategories.includes(category);
-        if (isChecked) {
-            setSelectedCategories(prev => prev.filter(cat => cat !== category));
-        } else {
-            setSelectedCategories(prev => [...prev, category]);
-        }
-    };
-
-    const isFormValid = title.trim() !== '' && selectedCategories.length > 0;
 
     const handleSaveStory = async () => {
         const newStory: Story = {
             title,
-            chapters: [], // Leere Kapitel-Liste für eine neue Story
+            chapters: [],
             categories: selectedCategories,
             description,
-            id: ""
+            id: "",
+            coverUrl
         };
 
-        const response = await saveStory(newStory);
-        if (response.success && response.id) {
-            await addChapterToStory(response.id, 0);
-            router.push(`/edit/${response.id}`);
-        } else {
-            alert('Fehler beim Speichern der Geschichte. Bitte versuchen Sie es erneut.');
+        try {
+            const response = await saveStory(newStory);
+            if (response.success && response.id) {
+                if (coverFile) {
+                    await uploadCoverImage(response.id, coverFile);
+                }
+                await addChapterToStory(response.id, 0);
+                toast.success('Story created successfully!', { autoClose: 1000 });
+                router.push(`/edit/${response.id}`);
+            } else {
+                throw new Error('Failed to save story');
+            }
+        } catch (error) {
+            console.error('Error saving story:', error);
         }
     };
 
     return (
-        <div>
-            <div>
-                {isFormValid ? (
-                    <button onClick={handleSaveStory}>Weiter</button>
-                ) : (
-                    <button>Abbrechen</button>
-                )}
-            </div>
-            <div>
-                <p>Details zur Geschichte</p>
-                <p>Titel</p>
-                <input type="text" value={title} onChange={handleTitleChange} />
-                <p>Beschreibung</p>
-                <textarea value={description} onChange={handleDescriptionChange}></textarea>
-                {selectedCategories.length > 0 && (
-                    <ul>
-                        {selectedCategories.map((cat, index) => (
-                            <li key={index}>{cat}</li>
-                        ))}
-                    </ul>
-                )}
-                <p>Kategorien auswählen:</p>
-                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #ccc', padding: '5px', backgroundColor: 'white' }}>
-                    {loadingCategories ? (
-                        <p>Lade Kategorien...</p>
-                    ) : (
-                        categories.map((cat) => (
-                            <div key={cat}>
-                                <input
-                                    type="checkbox"
-                                    id={cat}
-                                    value={cat}
-                                    checked={selectedCategories.includes(cat)}
-                                    onChange={() => handleCategoryChange(cat)}
-                                />
-                                <label htmlFor={cat}>{cat}</label>
-                            </div>
-                        ))
-                    )}
-                </div>
-            </div>
-        </div>
+        <>
+        <h1 style={{backgroundColor: 'white', padding: '40px', margin: '0' }}>Erstelle eine neue Geschichte</h1>
+        <StoryForm
+            title={title}
+            description={description}
+            categories={categories}
+            selectedCategories={selectedCategories}
+            loadingCategories={loadingCategories}
+            onTitleChange={handleTitleChange}
+            onDescriptionChange={handleDescriptionChange}
+            onCategoryChange={handleCategoryChange}
+            isFormValid={isFormValid}
+            onSave={handleSaveStory}
+            coverUrl={coverUrl}
+            onCoverChange={handleCoverChange}
+            onCancel={handleCancel}
+            onValidateForm={validateForm}
+            error={error}
+            />
+        </>
     );
 };
-
 
 export default CreateStory;

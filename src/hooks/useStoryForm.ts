@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getAllCategories } from '@/services/category.database.handler';
 import { Story } from "@/types/types";
+import router from "next/router";
 
 export const useStoryForm = (initialStory: Story | null) => {
     const [title, setTitle] = useState<string>(initialStory?.title || '');
@@ -8,15 +9,18 @@ export const useStoryForm = (initialStory: Story | null) => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>(initialStory?.categories || []);
     const [description, setDescription] = useState<string>(initialStory?.description || '');
     const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
+    const [coverFile, setCoverFile] = useState<File | null>(null); 
+    const [coverUrl, setCoverUrl] = useState<string>(initialStory?.coverUrl || '');
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
                 const fetchedCategories = await getAllCategories();
-                setCategories(fetchedCategories ?? []); // Use an empty array if fetchedCategories is null
+                setCategories(fetchedCategories ?? []);
             } catch (error) {
                 console.error('Failed to fetch categories:', error);
-                setCategories([]); // Set an empty array on error
+                setCategories([]);
             } finally {
                 setLoadingCategories(false);
             }
@@ -30,11 +34,13 @@ export const useStoryForm = (initialStory: Story | null) => {
             setTitle(initialStory.title);
             setDescription(initialStory.description);
             setSelectedCategories(initialStory.categories);
+            setCoverUrl(initialStory.coverUrl);
         }
     }, [initialStory]);
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
+        if (error) setError(null);
     };
 
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -48,9 +54,37 @@ export const useStoryForm = (initialStory: Story | null) => {
         } else {
             setSelectedCategories(prev => [...prev, category]);
         }
+        if (error) setError(null);
+    };
+
+    const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setCoverFile(e.target.files[0]);
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                if (event.target?.result) {
+                    setCoverUrl(event.target.result as string);
+                }
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
     };
 
     const isFormValid = title.trim() !== '' && selectedCategories.length > 0;
+
+    const validateForm = () => {
+        if(!isFormValid) {
+            setError('Bitte die angegebenen Felder füllen');
+            return false;
+        }
+        setError(null);
+        console.log('speichern');
+        return true;
+    };
+
+    const handleCancel = () => {
+        router.back();
+    };
 
     return {
         title,
@@ -59,9 +93,15 @@ export const useStoryForm = (initialStory: Story | null) => {
         selectedCategories,
         description,
         loadingCategories,
+        coverFile,
+        coverUrl,
+        error,
         handleTitleChange,
         handleDescriptionChange,
         handleCategoryChange,
+        handleCoverChange,
+        handleCancel,
         isFormValid,
+        validateForm
     };
 };

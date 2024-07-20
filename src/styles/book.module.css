@@ -1,0 +1,114 @@
+.bookContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.book {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    min-height: 500px
+}
+
+.coverImage {
+    width: 200px;
+    margin-right: 20px;
+    border-radius: 5px;
+    transition: transform 0.3s ease; 
+}
+
+.coverImage:hover {
+    transform: scale(1.2);
+}
+
+.bookDescription {
+    overflow: auto;
+    max-height: 250px;
+    min-height: 250px;
+    flex-grow: 1;
+}
+
+.category {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.categoryContainer {
+    max-height: 100px;
+    overflow: auto;
+    margin: 30px 0;
+}
+
+.categoryItem {
+    background-color: #eaeaea;
+    font-size: 10pt;
+    padding: 5px 10px;
+    margin: 5px 5px 0 0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.bookButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.bookButtons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.bookButtons button:first-child {
+    background-color: #890049;
+    color: white;
+}
+
+.bookButtons button:first-child:hover {
+    background-color: #6a0039;
+}
+
+.bookButtons button:last-child {
+    background-color: #f9ebcf;
+    color: black;
+}
+
+.bookButtons button:last-child:hover {
+    background-color: #f3e2bf;
+}
+
+@media (max-width: 768px) {
+    .book {
+        flex-direction: column; 
+        min-height: auto; 
+    }
+
+    .coverImage {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px; 
+    }
+
+    .bookDescription {
+        max-height: none;
+    }
+
+    .categoryContainer {
+        max-height: none; 
+    }
+
+    .bookButtons {
+        flex-direction: column; 
+    }
+
+    .bookButtons button {
+        width: 100%; 
+        margin-bottom: 10px; 
+    }
+}

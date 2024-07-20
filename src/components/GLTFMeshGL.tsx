@@ -135,7 +135,6 @@ const GLTFMeshGL: React.FC<IGLTFMeshGLProps> = ({ modelUrl, groupTitles }) => {
           </>
         )}
       </group>
-      <OrbitControls />
     </Canvas>
   );
 };

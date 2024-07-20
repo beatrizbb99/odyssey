@@ -21,28 +21,37 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
         handleDescriptionChange,
         handleCategoryChange,
         isFormValid,
+        coverFile,
+        coverUrl,
+        handleCoverChange,
+        handleCancel,
+        validateForm,
+        error
     } = useStoryForm(story);
 
     const router = useRouter();
 
     const handleSaveStory = async () => {
         const updatedStory = {
-            ...story, // Keep all existing fields of the current story
+            ...story,
             title,
             categories: selectedCategories,
-            description
+            description,
+            coverUrl: coverFile ? URL.createObjectURL(coverFile) : story.coverUrl
         };
 
-        const response = await updateStory(updatedStory);
+        const response = await updateStory(updatedStory, coverFile);
         if (response.success) {
-            onUpdateStory(updatedStory); // Update the story in the parent with the updated story
+            onUpdateStory(updatedStory);
             router.push(`/edit/${story.id}`);
         } else {
-            alert('Fehler beim Speichern der Geschichte. Bitte versuchen Sie es erneut.');
+            alert('Error saving the story. Please try again.');
         }
     };
 
     return (
+        <>
+        <h1 style={{backgroundColor: 'white', padding: '40px', margin: '0' }}>Geschichte bearbeiten</h1>
         <StoryForm
             title={title}
             description={description}
@@ -54,7 +63,13 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
             onCategoryChange={handleCategoryChange}
             isFormValid={isFormValid}
             onSave={handleSaveStory}
-        />
+            coverUrl={coverUrl}
+            onCoverChange={handleCoverChange}
+            onCancel={handleCancel} 
+            onValidateForm={validateForm}
+            error={error}
+            />
+        </>
     );
 };
 
