@@ -2,12 +2,13 @@
     width: 100%;
     padding: 15px;
     height: 100%;
+    background-color: white;
 }
 
 .chapterList {
     padding: 0;
     overflow: auto;
-    height: 600px;
+    max-height: 600px;
 }
 
 .chapterItem {

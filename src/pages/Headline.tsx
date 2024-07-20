@@ -8,7 +8,7 @@ const Headline: React.FC = () => {
 
   const handleClick = () => {
     console.log("Go to shelf!")
-    router.push('/shelf');
+    router.push('/category/shelf');
   }
   
   useEffect(() => {

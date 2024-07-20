@@ -10,6 +10,7 @@
     height: 30%;
     padding: 50px;
     background-color: var(--primary-color);
+    font-size: 14pt;
 }
 
 .header button {
@@ -23,6 +24,10 @@
 
 .header button:hover {
     background-color: #6a0039;
+}
+
+.header h1 {
+    font-size: 28pt;
 }
 
 .content {

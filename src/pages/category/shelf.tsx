@@ -10,12 +10,18 @@ const Shelf: React.FC = () => {
         router.push('/');
     }
 
+    const create = () => {
+      router.push('/story/new')
+    }
 
+
+    //scene: shelf!
   return (
-    <div className={styles.shelfContainer}>
+    <div>
       <h1>Welcome to the Shelf Page</h1>
-      <Scene /> 
       <button onClick={returns} >Go back to the start!</button>
+      <button onClick={create}> Create a new story!</button>
+      <Scene />
     </div>
   );
 };

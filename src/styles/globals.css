@@ -17,7 +17,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   height: 100%;
   overflow-x: hidden;
-  background-color: rgb(253, 196, 220);
+  background-color: #F4E4BA;
 }
 
 html {
@@ -26,6 +26,7 @@ html {
 
 body {
   min-height: 100%;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
 * {
@@ -38,4 +39,18 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+button {
+  background-color: #fd97ca;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border: white;
+  border-radius: 12px;
 }

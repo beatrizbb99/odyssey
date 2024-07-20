@@ -15,6 +15,7 @@ interface StoryFormProps {
     onValidateForm: () => boolean;
     onSave: () => void;
     coverUrl: string;
+    modelName: string,
     onCoverChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     error?: string | null;
     onCancel: () => void;
@@ -33,6 +34,7 @@ const StoryForm: React.FC<StoryFormProps> = ({
     onValidateForm,
     onSave,
     coverUrl,
+    modelName,
     onCoverChange,
     error,
     onCancel

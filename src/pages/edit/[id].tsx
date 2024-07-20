@@ -7,6 +7,7 @@ import EditChapters from '@/components/EditChapters';
 import styles from '@/styles/editStory.module.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Loading from '@/components/Loading';
 
 const EditableStory: React.FC = () => {
     const router = useRouter();
@@ -46,7 +47,7 @@ const EditableStory: React.FC = () => {
     };
 
     if (!story) {
-        return <div>Loading...</div>;
+        return <Loading />
     }
 
     return (

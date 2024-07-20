@@ -13,6 +13,7 @@ const CreateStory: React.FC = () => {
         selectedCategories,
         description,
         loadingCategories,
+        modelName,
         handleTitleChange,
         handleDescriptionChange,
         handleCategoryChange,
@@ -30,6 +31,7 @@ const CreateStory: React.FC = () => {
     const handleSaveStory = async () => {
         const newStory: Story = {
             title,
+            modelName,
             chapters: [],
             categories: selectedCategories,
             description,
@@ -64,6 +66,7 @@ const CreateStory: React.FC = () => {
             selectedCategories={selectedCategories}
             loadingCategories={loadingCategories}
             onTitleChange={handleTitleChange}
+            modelName={modelName}
             onDescriptionChange={handleDescriptionChange}
             onCategoryChange={handleCategoryChange}
             isFormValid={isFormValid}

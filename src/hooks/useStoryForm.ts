@@ -5,6 +5,7 @@ import router from "next/router";
 
 export const useStoryForm = (initialStory: Story | null) => {
     const [title, setTitle] = useState<string>(initialStory?.title || '');
+    const [modelName, setModelName] = useState<string>('basic_book_test');
     const [categories, setCategories] = useState<string[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>(initialStory?.categories || []);
     const [description, setDescription] = useState<string>(initialStory?.description || '');
@@ -35,6 +36,7 @@ export const useStoryForm = (initialStory: Story | null) => {
             setDescription(initialStory.description);
             setSelectedCategories(initialStory.categories);
             setCoverUrl(initialStory.coverUrl);
+            setModelName(initialStory.modelName);
         }
     }, [initialStory]);
 
@@ -89,6 +91,7 @@ export const useStoryForm = (initialStory: Story | null) => {
     return {
         title,
         setTitle,
+        modelName,
         categories,
         selectedCategories,
         description,

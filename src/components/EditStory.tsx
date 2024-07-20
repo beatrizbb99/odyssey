@@ -23,6 +23,7 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
         isFormValid,
         coverFile,
         coverUrl,
+        modelName,
         handleCoverChange,
         handleCancel,
         validateForm,
@@ -53,22 +54,23 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
         <>
         <h1 style={{backgroundColor: 'white', padding: '40px', margin: '0' }}>Geschichte bearbeiten</h1>
         <StoryForm
-            title={title}
-            description={description}
-            categories={categories}
-            selectedCategories={selectedCategories}
-            loadingCategories={loadingCategories}
-            onTitleChange={handleTitleChange}
-            onDescriptionChange={handleDescriptionChange}
-            onCategoryChange={handleCategoryChange}
-            isFormValid={isFormValid}
-            onSave={handleSaveStory}
-            coverUrl={coverUrl}
-            onCoverChange={handleCoverChange}
-            onCancel={handleCancel} 
-            onValidateForm={validateForm}
-            error={error}
-            />
+                title={title}
+                description={description}
+                categories={categories}
+                selectedCategories={selectedCategories}
+                loadingCategories={loadingCategories}
+                onTitleChange={handleTitleChange}
+                onDescriptionChange={handleDescriptionChange}
+                onCategoryChange={handleCategoryChange}
+                isFormValid={isFormValid}
+                onSave={handleSaveStory}
+                coverUrl={coverUrl}
+                onCoverChange={handleCoverChange}
+                onCancel={handleCancel}
+                onValidateForm={validateForm}
+                error={error} 
+                modelName={modelName}
+        />
         </>
     );
 };

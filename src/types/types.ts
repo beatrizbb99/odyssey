@@ -13,11 +13,5 @@ export interface Story {
     description: string;
     original?: boolean;
     coverUrl: string;
-}
-
-export interface Book {
-    id: string;
-    name: string;
-    text: string;
-    model: string;
+    modelName: string;
 }
