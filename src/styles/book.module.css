@@ -1,6 +1,7 @@
 .bookContainer {
     display: flex;
     flex-direction: column;
+    background-color: white;
 }
 
 .book {
@@ -72,21 +73,21 @@
 }
 
 .bookButtons button:first-child {
-    background-color: #890049;
+    background-color: #E853AA;
     color: white;
 }
 
 .bookButtons button:first-child:hover {
-    background-color: #6a0039;
+    background-color: #ca398e;
 }
 
 .bookButtons button:last-child {
-    background-color: #f9ebcf;
-    color: black;
+    background-color: #E853AA;
+    color: white;
 }
 
 .bookButtons button:last-child:hover {
-    background-color: #f3e2bf;
+    background-color: #ca398e;
 }
 
 @media (max-width: 768px) {

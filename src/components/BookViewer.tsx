@@ -4,7 +4,6 @@ import { OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
 import { storage } from '../api/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
 import * as THREE from 'three';
-import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
 
 interface BookProps {
   url: string;
@@ -72,16 +71,14 @@ const BookViewer: React.FC<BookViewerProps> = ({ bookName }) => {
     fetchModelUrl();
   }, [bookName]);
 
-
-    //  TODO: Positionierung + Beleuchtung!
-
+  
   return (
     <div style={{ width: '100vw', height: '100vh' }} ref={canvasRef}>
       {error && <p>{error}</p>}
       {modelUrl && (
         <Canvas
           frameloop="always"
-          camera={{ position: [25, 13, 20], fov: 12, near: 0.1, far: 100 }}
+          camera={{ position: [0, 15, 20], fov: 30, near: 0.1, far: 100 }}
         >
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
