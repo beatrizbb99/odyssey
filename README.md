@@ -1,28 +1,58 @@
+# Creative Odyssey
+
+## Overwiev
+
+Creative Odyssey is a web application that allows users to create, browse, and manage book stories and categories. It utilizes modern web technologies and frameworks, including React, Next.js, Three.js and Firebase.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## Features
 
-First, run the development server:
+- Browse and search book stories.
+- Create and edit book stories and their chapters
+- View categories in a 3D scene
+- Seamless navigation between different sections
+- Loading indicators for better user experience
+- Interactive 3D models using Three.js
+- Firebase integration for storage and data management
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Installation
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Clone the repository:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+    ```bash
+    git clone https://github.com/your-repository/book-stories-platform.git
+    cd book-stories-platform
+    ```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+2. Install dependencies:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+    ```bash
+    npm install
+    ```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+3. Set up Firebase:
+
+    - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/).
+    - Add a web app to your Firebase project.
+    - Copy your Firebase configuration and set it in your project (usually in a `.env.local` file):
+
+      ```env
+      NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+      NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+      ```
+
+4. Start the development server:
+
+    ```bash
+    npm run dev
+    ```
+
+5. Open your browser and navigate to `http://localhost:3000`.
 
 ## Learn More
 
