@@ -77,8 +77,9 @@ const BookViewer: React.FC<BookViewerProps> = ({ bookName }) => {
       {error && <p>{error}</p>}
       {modelUrl && (
         <Canvas
+          style={{ width: '100%'}}
           frameloop="always"
-          camera={{ position: [0, 15, 20], fov: 30, near: 0.1, far: 100 }}
+          camera={{ position: [0, 4, 10], fov: 30, near: 0.1, far: 100 }}
         >
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />

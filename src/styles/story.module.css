@@ -17,12 +17,21 @@
 }
 
 .storyText {
-  width: 70%;
-  background-color: white;
+  width: 600px;
+  height: 700px;
+  background-color: rgba(255, 255, 255, 0.582);
+  overflow: auto;
   border-radius: 10px;
   text-align: justify;
-  border: solid;
-  border-color: #F7B2B2;
+  border: 1px solid #F7B2B2;
   padding: 20px;
   margin-left: 30px;
+}
+
+.chapterSelection {
+  border-right: 2px solid white;
+}
+
+.storyDetails {
+  width: 700px;
 }

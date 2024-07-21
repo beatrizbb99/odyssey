@@ -51,12 +51,14 @@ const StoryView: React.FC = () => {
   return (
     <div style={{ display: 'flex' }}>
       {story.chapters.length >= 2 && (
-        <KapitelPanel
-          chapters={story.chapters}
-          onSelect={setSelectedChapterIndex} 
-          selectedIndex={selectedChapterIndex}/>
+        <div className={styles.chapterSelection}>
+          <KapitelPanel
+            chapters={story.chapters}
+            onSelect={setSelectedChapterIndex} 
+            selectedIndex={selectedChapterIndex}/>
+        </div>
       )}
-      <div style={{ marginLeft: '20px', padding: '10px' }}>
+      <div className={styles.storyDetails} style={{ marginLeft: '20px', padding: '10px' }}>
         <h2 className = {styles.storyHeadline}>{story.title}</h2>
         <h3 className = {styles.chapterHeadline}>{selectedChapter.title}</h3>
         <p className={styles.storyText}>{selectedChapter.content}</p>
