@@ -4,8 +4,6 @@
 
 Creative Odyssey is a web application that allows users to create, browse, and manage book stories and categories. It utilizes modern web technologies and frameworks, including React, Next.js, Three.js and Firebase.
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 ## Features
 
 - Browse and search book stories.
