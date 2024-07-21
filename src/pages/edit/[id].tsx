@@ -11,6 +11,10 @@ import Loading from '@/components/Loading';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSmileWink } from '@fortawesome/free-solid-svg-icons';
 
+/** 
+ * Editor for stored Storys
+*/
+
 const EditableStory: React.FC = () => {
     const router = useRouter();
     const { id: storyId } = router.query;

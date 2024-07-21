@@ -3,6 +3,12 @@ import {useRouter} from 'next/router';
 import Scene from '@/components/Scene';
 import styles from '@/styles/shelf.module.css'
 
+/**
+ * Shelf-Page with all available Categories
+ * @returns 
+ */
+
+
 const Shelf: React.FC = () => {
     const router = useRouter();
 

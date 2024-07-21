@@ -1,8 +1,13 @@
-import React, { Suspense, useRef, useState } from 'react';
+import React from 'react';
 import ModelViewer from '../components/ModelViewer';
 import Headline from '@/components/Headline';
 
 const Home: React.FC = () => {
+
+  /**
+   * Homepage of the Application, starts with the reading_room-model
+   * and a Headline
+   */
 
   return (
     <div>

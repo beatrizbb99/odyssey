@@ -5,6 +5,12 @@ import StoryForm from "@/components/StoryForm";
 import { Story } from "@/types/types";
 import { useStoryForm } from "@/hooks/useStoryForm";
 
+/**
+ * Create a new Story and store it in the database
+ * @returns 
+ */
+
+
 const CreateStory: React.FC = () => {
     const {
         title,

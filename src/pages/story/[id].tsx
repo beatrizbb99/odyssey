@@ -7,6 +7,14 @@ import BookViewer from '@/components/BookViewer';
 import Loading from '@/components/Loading';
 import styles from '@/styles/story.module.css'
 
+
+/**
+ * Contains the bookViewer-Component that shows the book-model for the
+ * chosen story
+ * 
+ * @returns Page for single Story, also known as "the reading room" for a story
+ */
+
 const StoryView: React.FC = () => {
   const router = useRouter();
   const { id: storyId } = router.query;
