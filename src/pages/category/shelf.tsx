@@ -17,11 +17,15 @@ const Shelf: React.FC = () => {
 
     //scene: shelf!
   return (
-    <div>
-      <h1>Welcome to the Shelf Page</h1>
-      <button onClick={returns} >Go back to the start!</button>
-      <button onClick={create}> Create a new story!</button>
-      <Scene />
+    <div className={styles.shelfContainer}>
+      <div className={styles.options}>
+        <h1>Wähle eine Kategorie aus dem Regal</h1>
+        <button onClick={returns} >Zurück zum Anfang!</button>
+        <button onClick={create}>Erstelle eine Geschichte!</button>
+      </div>
+      <div className={styles.sceneContainer}>
+        <Scene/>
+      </div>
     </div>
   );
 };

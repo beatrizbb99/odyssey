@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { useGLTF, Html, OrbitControls } from '@react-three/drei';
+import { useGLTF, Html, OrbitControls, Center } from '@react-three/drei';
 import { Group as ThreeGroup, Mesh as ThreeMesh, Object3D } from 'three';
 import { EffectComposer, Outline } from '@react-three/postprocessing';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
@@ -19,7 +19,7 @@ const GLTFMeshGL: React.FC<IGLTFMeshGLProps> = ({ modelUrl, groupTitles }) => {
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
-      setMousePosition({ x: event.clientX - 600, y: event.clientY - 400 });
+      setMousePosition({ x: event.clientX-600, y: event.clientY-580 });
     };
 
     if (hoveredGroup) {
@@ -116,25 +116,27 @@ const GLTFMeshGL: React.FC<IGLTFMeshGLProps> = ({ modelUrl, groupTitles }) => {
   };
 
   return (
-    <Canvas style={{ height: '100vh', width: '100vw' }} camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 1000 }}>
+    <Canvas style={{ height: '450px'}} camera={{ position: [0, 0, 5], fov: 45, near: 0.1, far: 1000 }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
       <directionalLight position={[-5, -5, -5]} intensity={0.5} />
-      <group>
-        {renderedScene}
-        {hoveredGroup && (
-          <>
-            <EffectComposer>
-              <Outline />
-            </EffectComposer>
-            <Html style={htmlStyle}>
-              <div>
-                <p>{groupTitles[hoveredGroup.name]}</p>
-              </div>
-            </Html>
-          </>
-        )}
-      </group>
+      <Center>
+        <group>
+          {renderedScene}
+          {hoveredGroup && (
+            <>
+              <EffectComposer>
+                <Outline />
+              </EffectComposer>
+              <Html style={htmlStyle}>
+                <div>
+                  <p>{groupTitles[hoveredGroup.name]}</p>
+                </div>
+              </Html>
+            </>
+          )}
+        </group>
+      </Center>
     </Canvas>
   );
 };
