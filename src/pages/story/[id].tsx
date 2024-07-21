@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Story } from '@/types/types';
 import KapitelPanel from '@/components/KapitelPanel';
 import { fetchStory } from '@/services/story.database.handler';
 import BookViewer from '@/components/BookViewer';
-
 import Loading from '@/components/Loading';
+import styles from '@/styles/story.module.css'
 
 const StoryView: React.FC = () => {
   const router = useRouter();
@@ -15,9 +15,6 @@ const StoryView: React.FC = () => {
   const [story, setStory] = useState<Story | null>(null);
   const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(0);
   const [loading, setLoading] = useState(true);
-  if(story) {
-    console.log("STORYMODEL: ", story.modelName)
-  }
 
   
   const backToCategory = () => {
@@ -60,9 +57,9 @@ const StoryView: React.FC = () => {
           selectedIndex={selectedChapterIndex}/>
       )}
       <div style={{ marginLeft: '20px', padding: '10px' }}>
-        <h2>{story.title}</h2>
-        <h3>{selectedChapter.title}</h3>
-        <p>{selectedChapter.content}</p>
+        <h2 className = {styles.storyHeadline}>{story.title}</h2>
+        <h3 className = {styles.chapterHeadline}>{selectedChapter.title}</h3>
+        <p className={styles.storyText}>{selectedChapter.content}</p>
       </div>
       <BookViewer bookName={story.modelName}/>
     </div>
