@@ -19,7 +19,7 @@ const StoriesPage: React.FC<StoriesPageProps> = ({ categoryId, title }) => {
     }
 
     const handleGoToShelf = () => {
-        router.push('/shelf');
+        router.push('/category/shelf');
     }
 
     if (loading) {
