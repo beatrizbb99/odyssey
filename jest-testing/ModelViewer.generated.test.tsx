@@ -1,6 +1,6 @@
 import {render} from '@testing-library/react';
 import React from 'react';
-import ModelViewer from '@/pages/ModelViewer';
+import ModelViewer from '@/components/ModelViewer';
 
 jest.mock('@react-three/fiber');
 jest.mock('@react-three/drei');
