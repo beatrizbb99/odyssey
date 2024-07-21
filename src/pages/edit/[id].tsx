@@ -61,9 +61,7 @@ const EditableStory: React.FC = () => {
                 <button
                     className={`${styles.button} ${mode === 'editStory' ? styles.active : ''}`}
                     onClick={switchToEditStoryMode}
-                >
-                    Details zur Geschichte
-                </button>
+                >Details zur Geschichte</button>
                 <button
                     className={`${styles.button} ${mode === 'editChapters' ? styles.active : ''}`}
                     onClick={switchToEditChaptersMode}

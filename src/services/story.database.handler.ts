@@ -167,13 +167,18 @@ export const saveStory = async (story: Story): Promise<{ success: boolean; id?: 
     const storyRef = collection(firestore, 'Stories');
     const storyDocRef = doc(storyRef);
 
+    let coverUrl = story.coverUrl;
+    if (!coverUrl) {
+      coverUrl = await handleCoverUpload(storyDocRef.id, null);
+    }
+
     await setDoc(storyDocRef, {
       id: storyDocRef.id,
       title: story.title,
       description: story.description,
       categories: story.categories,
       modelName: story.modelName,
-      coverUrl: story.coverUrl || '',
+      coverUrl: coverUrl,
       color: story.color
     });
 

@@ -80,3 +80,7 @@ button {
   border: white;
   border-radius: 12px;
 }
+
+button:hover {
+  background-color: #f47eb9;
+}

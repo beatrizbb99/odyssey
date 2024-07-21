@@ -14,15 +14,20 @@ const Shelf: React.FC = () => {
       router.push('/story/new')
     }
 
+    const showAll = () => {
+      router.push('/story')
+    }
+
 
     //scene: shelf!
   return (
     <div className={styles.shelfContainer}>
       <div className={styles.options}>
         <h1>Wähle eine Kategorie aus dem Regal</h1>
-        <button onClick={returns} >Zurück zum Anfang!</button>
+        <button onClick={returns} >Zurück zum Anfang</button>
         <button onClick={create}>Erstelle eine Geschichte!</button>
       </div>
+      <button className={styles.allButton} onClick={showAll}>Alle Geschichten</button>
       <div className={styles.sceneContainer}>
         <Scene/>
       </div>

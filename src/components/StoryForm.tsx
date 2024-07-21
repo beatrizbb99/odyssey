@@ -138,7 +138,7 @@ const StoryForm: React.FC<StoryFormProps> = ({
                                 )}
                             </div>
                         </div>
-                        {error && <p className={styles.error}>{error}</p>}
+                        {error && <p id='errorMessage' className={styles.error}>{error}</p>}
                         <div className={styles.buttons}>
                             <button
                                 onClick={() => {

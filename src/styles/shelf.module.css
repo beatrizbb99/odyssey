@@ -11,11 +11,19 @@
     color: white;
 }
 
+.allButton {
+    margin: 0 100px;
+    font-size: 14pt;
+}
 .options {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 30px;
+}
+
+.options button {
+    padding: 10px 10px;
 }
 
 .sceneContainer {

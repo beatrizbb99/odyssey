@@ -12,13 +12,18 @@
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-    min-height: 500px
+    min-height: 600px
+}
+
+.book h2 {
+    min-height: 100px;
 }
 
 .coverImage {
     width: 200px;
     margin-right: 20px;
     border-radius: 5px;
+    border: 1px solid #ccc;
     transition: transform 0.3s ease; 
 }
 
