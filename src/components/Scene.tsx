@@ -13,10 +13,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import styles from '@/styles/shelf.module.css';
+import Loading from './Loading';
 
 const Scene: React.FC = () => {
   const [modelUrl, setModelUrl] = useState<string | null>(null);
   const [categories, setCategories] = useState<{ title: string }[]>([]);
+  const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -27,16 +29,14 @@ const Scene: React.FC = () => {
       }
     };
 
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
     const fetchModelUrl = async () => {
       const url = await loadModel('models/shelf.glb');
       setModelUrl(url);
     };
 
-    fetchModelUrl();
+    Promise.all([fetchCategories(), fetchModelUrl()]).then(() => {
+      setLoading(false);
+    });
   }, []);
 
   const chunkCategories = (categories: { title: string }[]) => {
@@ -62,26 +62,33 @@ const Scene: React.FC = () => {
 
   return (
     <div className={styles.sliderContainer}>
-      <div className={styles.swiperContainer}>
-        <button className="arrow-left arrow"><FontAwesomeIcon icon={faChevronLeft} /></button>
-        {modelUrl && (
-          <Swiper
-            navigation={{
-              nextEl: ".arrow-left",
-              prevEl: ".arrow-right"
-            }}
-            pagination={{ clickable: true, dynamicBullets: true }}
-            modules={[Navigation, Pagination, EffectFade]}
-          >
-            {groupTitlesArray.map((groupTitles, index) => (
-              <SwiperSlide key={index} >
-                <GLTFMeshGL modelUrl={modelUrl} groupTitles={groupTitles} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        )}
-        <button className="arrow-right arrow"><FontAwesomeIcon icon={faChevronRight} /></button>
-      </div>
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className={styles.swiperContainer}>
+          <>
+            <button className="arrow-left arrow"><FontAwesomeIcon icon={faChevronLeft} /></button>
+            {modelUrl && (
+              <Swiper
+                navigation={{
+                  nextEl: ".arrow-right",
+                  prevEl: ".arrow-left"
+                }}
+                pagination={{ clickable: true, dynamicBullets: true }}
+                modules={[Navigation, Pagination, EffectFade]}
+              >
+                {groupTitlesArray.map((groupTitles, index) => (
+                  <SwiperSlide key={index} >
+                    <GLTFMeshGL modelUrl={modelUrl} groupTitles={groupTitles} />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            )}
+            <button className="arrow-right arrow"><FontAwesomeIcon icon={faChevronRight} /></button>
+          </>
+       
+        </div>
+       )}
     </div>
   );
 };

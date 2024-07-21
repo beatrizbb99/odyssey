@@ -15,7 +15,7 @@ const GLTFMeshGL: React.FC<IGLTFMeshGLProps> = ({ modelUrl, groupTitles }) => {
   const [hoveredGroup, setHoveredGroup] = useState<ThreeGroup | null>(null);
   const hoveredGroupRef = useRef<ThreeGroup | null>(null);
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
