@@ -78,7 +78,7 @@ const Scene: React.FC = () => {
                 modules={[Navigation, Pagination, EffectFade]}
               >
                 {groupTitlesArray.map((groupTitles, index) => (
-                  <SwiperSlide key={index} >
+                  <SwiperSlide id='swiperSlide' key={index} >
                     <GLTFMeshGL modelUrl={modelUrl} groupTitles={groupTitles} />
                   </SwiperSlide>
                 ))}

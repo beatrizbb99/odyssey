@@ -201,11 +201,13 @@ const EditChapters: React.FC<EditChaptersProps> = ({ story, onUpdateStory }) => 
             <div className={styles.chapterEditor}>
                 <h2>{story.title}</h2>
                 <input
+                    id='chapterTitel'
                     type="text"
                     value={editableTitle}
                     onChange={handleTitleChange}
                 />
                 <textarea
+                    id='chapterContent'
                     value={editableContent}
                     onChange={handleContentChange}
                     className={styles.text}

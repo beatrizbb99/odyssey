@@ -63,7 +63,7 @@ const Headline: React.FC = () => {
       <div id="text-behind-blur">CREATIVE<br />ODYSSEY</div>
       <div id="text-front">CREATIVE<br />ODYSSEY</div>
       <div id="button-div">
-        <button id="shelf-button" onClick={handleClick} > Go to Shelf </button>
+        <button id="shelf-button" onClick={handleClick} >Go to Shelf</button>
       </div>
     </div>
   );
