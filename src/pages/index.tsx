@@ -7,8 +7,6 @@ const Home: React.FC = () => {
   return (
     <div>
       <div>
-        {/*  <Suspense fallback={<Headline />}>
-        </Suspense> */}
         <ModelViewer modelName="reading_room" />
         <Headline />
       </div>
