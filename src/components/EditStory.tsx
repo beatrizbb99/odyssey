@@ -71,7 +71,7 @@ const EditStory: React.FC<EditStoryProps> = ({ story, onUpdateStory }) => {
                 autoClose: 3000,
                 icon: <FontAwesomeIcon icon={faTrashCan} style={{ color: "#e70dca" }} />,
             });
-            router.push("/");
+            router.back();
         } else {
             toast.error('Geschichte wurde nicht gelöscht');
         }
