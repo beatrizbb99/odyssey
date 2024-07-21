@@ -1,6 +1,6 @@
 import React, { Suspense, useRef, useState } from 'react';
-import ModelViewer from './ModelViewer';
-import Headline from './Headline';
+import ModelViewer from '../components/ModelViewer';
+import Headline from '@/components/Headline';
 
 const Home: React.FC = () => {
 
